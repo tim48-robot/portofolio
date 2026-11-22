@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuraStage from '../components/sections/AuraStage.astro';
+import AwakenControls from '../components/sections/AwakenControls.astro';
+import AwakenIntro from '../components/sections/AwakenIntro.astro';
+import { site } from '../content/site';
+import { awakenImages } from '../lib/images';
+
+const images = await awakenImages();
+---
+
+<BaseLayout
+  title={site.awaken.title}
+  description={site.awaken.description}
+  theme="night"
+  preloadFonts={['bebas-neue-400', 'inter-400']}
+>
+  <AwakenControls />
+  <main class="hero" id="hero" style={`--still:url(${images.background})`}>
+    <AuraStage portrait={images.portrait} background={images.background} depth={images.depth} />
+    <AwakenIntro frame={images.frame} />
+  </main>
+</BaseLayout>
+
+<script>
+  import '../scripts/awaken/main';
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  /* without WebGL2: a still of the background instead of an empty canvas */
+  .hero:global(.nogl-on) {
+    background: #030207 var(--still) center/cover no-repeat;
+  }
+</style>

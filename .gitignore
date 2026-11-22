@@ -1,0 +1,24 @@
+# dependencies and build output
+node_modules/
+dist/
+.astro/
+
+# heavy or generated material that stays local
+references/
+prototype/dist/
+prototype/_archive/
+prototype/review/measure/shots/
+prototype/node_modules/
+
+# editor and OS files
+.DS_Store
+*.log
+
+# the prototype is kept as reference code only; its images and sounds are duplicates or unused variants
+# (the originals the site uses live in src/assets and public/)
+prototype/**/*.png
+prototype/**/*.webp
+prototype/**/*.avif
+prototype/**/*.mp3
+prototype/**/*.wav
+prototype/review/

@@ -1,0 +1,42 @@
+/* Design tokens. The hero page is ink on paper with one red; the Awaken page is violet light on near-black.
+   Each page uses one set, chosen by the body class in BaseLayout. */
+:root {
+  --f-sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  --f-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --f-sfx: 'Dela Gothic One', 'Arial Black', Impact, sans-serif;
+  --f-hand: 'Gaegu', 'Comic Sans MS', cursive;
+  --f-status: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-display: 'Bebas Neue', Impact, sans-serif;
+  --f-ui: 'Inter', system-ui, sans-serif;
+  --f-code: 'JetBrains Mono', monospace;
+
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.theme-paper {
+  --paper: #f3f2ee;
+  --paper-2: #e8e7e1;
+  --card: #fbfbf9;
+  --ink: #0e0e10;
+  --ink-2: #3c3c42;
+  --muted: #66666c;
+  --line: #d6d5cf;
+  --grid: rgba(14, 14, 16, 0.045);
+  --red: #e0262f;
+  --red-ink: #b81d25;
+  color-scheme: light;
+}
+
+.theme-night {
+  --aura: #a855f7;
+  --hot: #f3e8ff;
+  --night: #030207;
+  --text: #ece9f5;
+  --text-2: #b8b3c8;
+  --amber: #ffd166;
+  /* live values written by the aura loop */
+  --p: 0;
+  --charge: 0;
+  color-scheme: dark;
+}
