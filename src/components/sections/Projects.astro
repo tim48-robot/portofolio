@@ -1,0 +1,30 @@
+---
+import ProjectCard from '../ui/ProjectCard.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import { projects } from '../../content/projects';
+---
+
+<section class="wrap projects" id="projects" aria-labelledby="proj-h">
+  <SectionHeading id="proj-h" lead="Things I've " stamp="built" aside={`${projects.length} projects · more soon`} />
+  <div class="cards">
+    {projects.map((project) => (
+      <ProjectCard project={project} />
+    ))}
+  </div>
+</section>
+
+<style>
+  .projects {
+    padding-block: 40px 96px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+  }
+  @media (max-width: 760px) {
+    .cards {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

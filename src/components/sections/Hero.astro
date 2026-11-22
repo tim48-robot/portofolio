@@ -1,0 +1,144 @@
+---
+import ScreentonePanel from './ScreentonePanel.astro';
+import { site } from '../../content/site';
+
+interface Props {
+  tone: { src: string; srcset: string };
+  colour: { src: string; srcset: string };
+  prefetch: string[];
+}
+const { tone, colour, prefetch } = Astro.props;
+
+// the headline inks in letter by letter; the delays are worked out here so no script is needed
+let delay = 0.15;
+const words = site.headline.lead
+  .trim()
+  .split(/\s+/)
+  .map((word) => [...word].map((ch) => ({ ch, delay: (delay += 0.035) - 0.035 })));
+---
+
+<section class="wrap hero" aria-labelledby="h1">
+  <h1 class="sr" id="h1">
+    {site.name}. {site.headline.lead}
+    {site.headline.punch}
+  </h1>
+  <div class="head" aria-hidden="true">
+    <span class="label">{site.name}</span>
+    <p class="big">
+      {words.map((chars) => (
+        <>
+          <span class="word">
+            {chars.map(({ ch, delay }) => (
+              <span class="ch" style={`animation-delay:${delay.toFixed(2)}s`}>
+                {ch}
+              </span>
+            ))}
+          </span>{' '}
+        </>
+      ))}
+      <span class="sfx">{site.headline.punch}</span>
+    </p>
+    <span class="label">
+      {site.role.toLowerCase()} · <b>{site.city}</b> · currently <b>{site.availability}</b>
+    </span>
+  </div>
+  <ScreentonePanel tone={tone} colour={colour} prefetch={prefetch} />
+</section>
+
+<style>
+  .hero {
+    padding-block: 44px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    overflow-x: clip;
+  }
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    min-width: 0;
+  }
+  .big {
+    text-wrap: balance;
+    font-size: clamp(36px, 5.6vw, 84px);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 500;
+    margin: 0;
+  }
+  .word {
+    white-space: nowrap;
+  }
+  .ch {
+    display: inline-block;
+    animation: inkin 0.9s var(--ease) both;
+  }
+  @keyframes inkin {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      filter: none;
+      transform: none;
+    }
+  }
+  .sfx {
+    position: relative;
+    display: inline-block;
+    font-family: var(--f-sfx);
+    font-weight: 400;
+    color: var(--red);
+    letter-spacing: -0.01em;
+    transform: rotate(-6deg) skewX(-6deg);
+    text-shadow: 4px 4px 0 var(--ink);
+    -webkit-text-stroke: 1.5px var(--ink);
+    paint-order: stroke fill;
+    animation: slam 0.55s var(--spring) 1s both;
+  }
+  .sfx::before {
+    content: '';
+    position: absolute;
+    inset: -60% -40%;
+    z-index: -1;
+    background: repeating-conic-gradient(from 0deg, var(--ink) 0 1.1deg, transparent 1.1deg 7deg);
+    mask: radial-gradient(closest-side, transparent 38%, #000 40%, transparent 72%);
+    opacity: 0.22;
+    animation: burst 0.7s var(--ease) 1.05s both;
+  }
+  @keyframes slam {
+    0% {
+      opacity: 0;
+      transform: rotate(-14deg) skewX(-6deg) scale(2.3);
+    }
+    60% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(-6deg) skewX(-6deg) scale(1);
+    }
+  }
+  @keyframes burst {
+    from {
+      opacity: 0.7;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 0.22;
+      transform: scale(1);
+    }
+  }
+  @media (max-width: 640px) {
+    .hero {
+      padding-block: 32px 20px;
+      gap: 24px;
+    }
+  }
+</style>

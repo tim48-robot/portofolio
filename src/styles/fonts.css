@@ -1,0 +1,97 @@
+/* Self-hosted Latin subsets (tools/fetch-fonts.py). Dela Gothic One and Gaegu only carry the few glyphs they draw. */
+@font-face {
+  font-family: 'Geist';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/geist-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist';
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/geist-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist';
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/geist-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/geist-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/geist-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/geist-mono-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/barlow-condensed-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/barlow-condensed-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/barlow-condensed-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Dela Gothic One';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/dela-gothic-one-hit-built.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Gaegu';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/gaegu-700-logo.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/bebas-neue-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-600.woff2') format('woff2');
+}

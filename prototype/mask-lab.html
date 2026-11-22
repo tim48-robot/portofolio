@@ -1,0 +1,459 @@
+<title>Mask Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: the portrait stage on the left, the five ways the mask can form on the right; one hold button drives every option. Single dark look by choice. */
+:root{--bg:#0b0912;--panel:#15111f;--line:#2b2440;--fg:#ede9f6;--muted:#a49cb8;--violet:#a47bff;--amber:#ffd166;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Barlow,system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1160px;margin-inline:auto;padding-inline:20px;padding-block:28px 60px;display:flex;flex-direction:column;gap:22px}
+h1{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:clamp(32px,5vw,46px);letter-spacing:.02em}
+.lede{margin:4px 0 0;color:var(--muted);max-width:72ch}
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:24px;align-items:start}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.stagebox{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
+@media (max-width:900px){.stagebox{position:static}}
+.stagewrap{perspective:1500px}
+.stage{position:relative;width:min(100%,520px,calc(66svh * 1.086));margin-inline:auto;aspect-ratio:1086/1000;overflow:hidden;border:1px solid var(--line);transition:transform .8s cubic-bezier(.3,.7,.2,1)}
+.stage.exploded{overflow:visible;transform-style:preserve-3d;transform:rotateY(32deg) rotateX(6deg) scale(.68);border-color:transparent}
+.stage.shake{animation:shake .35s linear}
+@keyframes shake{0%,100%{translate:0 0}20%{translate:-6px 4px}40%{translate:5px -5px}60%{translate:-4px 3px}80%{translate:3px -2px}}
+.stage > img.me{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 22%,#3a2470 0%,#170f2c 45%,#07050d 100%);transition:transform .8s cubic-bezier(.3,.7,.2,1)}
+/* new option 2: three layers that line up pixel for pixel with me.png (photo / mask fitted to the face / hair cut from the same photo) */
+.ff{position:absolute;left:0;top:0;width:100%;aspect-ratio:1086/1449;pointer-events:none;transform-style:preserve-3d}
+.L{position:absolute;inset:0;transition:transform .8s cubic-bezier(.3,.7,.2,1)}
+.L > img{position:absolute;inset:0;width:100%;height:100%}
+.Lmask{transform-style:preserve-3d}
+#sh2{position:absolute;inset:0;perspective:900px;perspective-origin:50.7% 16%}
+.s2{position:absolute;inset:0;will-change:transform,opacity}
+.s2 i{position:absolute;inset:0;background:url(layer-mask.png) 0 0/100% 100% no-repeat}
+.seams{position:absolute;inset:0;width:100%;height:100%;overflow:visible;-webkit-mask:url(layer-mask.png) 0 0/100% 100% no-repeat;mask:url(layer-mask.png) 0 0/100% 100% no-repeat;filter:drop-shadow(0 0 3px #b48cff) drop-shadow(0 0 8px #8a5cff)}
+.seams path{fill:none;stroke:#efe4ff;stroke-width:2.2;stroke-linejoin:round;opacity:0}
+.eyes2 i{position:absolute;top:17.46%;width:6.5%;height:1.25%;translate:-50% -50%;border-radius:50%;mix-blend-mode:screen;
+  background:radial-gradient(closest-side,#fff 0,#f1e8ff 35%,rgba(164,123,255,.6) 65%,transparent 100%);filter:drop-shadow(0 0 6px rgba(164,123,255,.8))}
+.eyes2 i:first-child{left:45.86%}.eyes2 i:last-child{left:55.52%}
+.lbl{position:absolute;left:3%;font:600 13px/1.2 Barlow,sans-serif;color:#fff;background:#2b2145;border:1px solid var(--violet);padding:3px 8px;white-space:nowrap;opacity:0;transition:opacity .4s}
+.stage.exploded .lbl{opacity:1}
+.stage.exploded > img.me{transform:translateZ(-120px)}
+.stage.exploded .Lhair{transform:translateZ(120px)}
+.stage.exploded .Leyes{transform:translateZ(120px)}
+.stage.exploded .flash,.stage.exploded .burst{display:none}
+.lblphoto{position:absolute;top:auto;bottom:6%;transform:translateZ(-120px);transition:transform .8s}
+.layers{font:inherit;font-size:14px;font-weight:600;padding:10px 14px;border:1px solid var(--line);background:none;color:var(--fg);cursor:pointer}
+.layers[aria-pressed="true"]{border-color:var(--amber);color:var(--amber)}
+/* the mask's resting place: between the eyes in me.png, sized to the face */
+.mk{position:absolute;left:36.85%;top:2.56%;width:27.5%;height:45%;pointer-events:none}
+.mk .persp{position:absolute;inset:0;perspective:700px}
+.mk .m{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;transform-origin:50% 60%;opacity:0;will-change:transform,opacity,filter}
+.mk canvas{position:absolute;inset:0;width:100%;height:100%}
+.mk .shards{position:absolute;inset:0;perspective:600px}
+.mk .sh{position:absolute;inset:0;background:url(mask.png) center/100% 100% no-repeat;opacity:0;will-change:transform,opacity}
+.mk .eyes{position:absolute;inset:0;opacity:0;transition:opacity .25s}
+.mk .eyes i{position:absolute;top:50%;width:22%;height:8%;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,#fff 0,#d6b8ff 35%,rgba(164,123,255,.7) 60%,transparent 100%);filter:blur(1px);mix-blend-mode:screen}
+.mk .eyes i:first-child{left:33%}.mk .eyes i:last-child{left:67%}
+.three{position:absolute;pointer-events:none}
+.flash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 25%,rgba(255,255,255,.95),rgba(190,150,255,.4) 18%,transparent 45%);opacity:0}
+.burst{position:absolute;left:50%;top:25%;width:220%;aspect-ratio:1;translate:-50% -50%;pointer-events:none;opacity:0;
+  background:repeating-conic-gradient(from 0deg,#fff 0 .5deg,transparent .5deg 4deg);-webkit-mask:radial-gradient(circle,transparent 12%,#000 18%,transparent 48%);mask:radial-gradient(circle,transparent 12%,#000 18%,transparent 48%)}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center}
+.hold{font:inherit;font-weight:600;font-size:16px;padding:12px 22px;border:1px solid var(--violet);background:rgba(164,123,255,.14);color:#fff;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.hold.on{background:var(--violet);color:#120a22}
+.meter{width:180px;height:6px;background:#241c38}
+.meter i{display:block;height:100%;width:0;background:var(--amber)}
+.hint{font-size:13px;color:var(--muted);text-align:center;margin:0}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{border:1px solid var(--line);background:var(--panel);padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:start;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.opt:hover{border-color:#4a3d6e}
+.opt[aria-pressed="true"]{border-color:var(--violet);box-shadow:inset 3px 0 0 var(--violet)}
+.opt h2{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:22px;letter-spacing:.03em}
+.opt p{margin:0;grid-column:1/-1;color:#cfc8de;font-size:15px}
+.opt .meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;letter-spacing:.06em;padding:1px 8px;border:1px solid var(--line);color:var(--muted)}
+.tag.rec{border-color:var(--amber);color:var(--amber)}
+.play{font:inherit;font-size:14px;font-weight:600;padding:6px 12px;border:1px solid var(--line);background:none;color:var(--fg);cursor:pointer}
+.play:hover{border-color:var(--violet)}
+.note{border:1px solid var(--line);padding:14px 16px;color:#cfc8de;font-size:15px}
+.note b{color:var(--fg)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Mask Lab</h1>
+    <p class="lede">Cara-cara topeng terbentuk di wajah kamu. Yang paling atas adalah pilihan kamu (nomor 2) yang sudah dikembangkan. Pilih satu di kanan, lalu <b>tahan tombol "Tahan untuk charge"</b> (atau tekan "Putar") dan lepas untuk melihat topeng terbakar. Semua cara berakhir dengan topeng menghadap depan, jadi wajah kamu tidak perlu menoleh.</p>
+  </header>
+
+  <div class="lab">
+    <div class="stagebox">
+      <div class="stagewrap">
+      <div class="stage" id="stage">
+        <img class="me" src="me.png" alt="Justin's portrait">
+        <span class="lbl lblphoto">1 · Foto kamu (poni tetap ada)</span>
+        <div class="ff" id="ff">
+          <div class="L Lmask" id="Lmask">
+            <div id="sh2"></div>
+            <img id="mfull" src="layer-mask.png" alt="" style="opacity:0">
+            <svg class="seams" id="seams" viewBox="0 0 1086 1449" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <span class="lbl" style="top:12%">2 · Topeng (kepingan)</span>
+          </div>
+          <div class="L Lhair"><img src="layer-hair.png" alt=""><span class="lbl" style="top:1%">3 · Rambut dari foto yang sama</span></div>
+          <div class="L Leyes eyes2" id="eyes2"><i></i><i></i></div>
+        </div>
+        <div class="mk" id="mk">
+          <div class="persp"><img class="m" id="mimg" src="mask.png" alt=""></div>
+          <canvas id="ink"></canvas>
+          <div class="shards" id="shards"></div>
+          <div class="eyes" id="eyes"><i></i><i></i></div>
+        </div>
+        <div class="flash" id="flash"></div>
+        <div class="burst" id="burst"></div>
+      </div>
+      </div>
+      <div class="ctrl">
+        <button class="hold" id="hold" type="button">Tahan untuk charge</button>
+        <span class="meter" aria-hidden="true"><i id="meter"></i></span>
+        <button class="layers" id="layers" type="button" aria-pressed="false">Lihat lapisan</button>
+      </div>
+      <p class="hint" id="state">Pilih cara, lalu tahan.</p>
+    </div>
+
+    <div class="opts" id="opts">
+      <button class="opt" type="button" data-k="shards2" aria-pressed="true">
+        <h2>2+ · Kepingan menyatu, versi baru</h2><span class="play" data-play>Putar</span>
+        <p>Selama charge, kepingan topeng muncul dan mengorbit kepala kamu seperti cincin, berkilau ungu. Lalu satu per satu melesat masuk dari tengah ke luar, setiap kepingan menyala di sambungannya saat terkunci. Di akhir semua sambungan menyala sekali, mata menyala tembus di sela poni. Saat dilepas, sambungan retak lagi dan kepingan meledak keluar. Topeng sudah disesuaikan ke bentuk wajah dan poni kamu tetap di depan topeng.</p>
+        <div class="meta"><span class="tag rec">pilihan kamu, dikembangkan</span><span class="tag">poni di atas topeng</span><span class="tag">coba "Lihat lapisan"</span></div>
+      </button>
+      <button class="opt" type="button" data-k="ink" aria-pressed="false">
+        <h2>1 · Tinta merambat</h2><span class="play" data-play>Putar</span>
+        <p>Topeng tidak datang dari mana-mana: ia tumbuh di wajah kamu. Tinta hitam merambat dari kedua mata dan garis tengah, dengan pinggiran ungu yang menyala, sampai menutup wajah. Seperti topeng hollow yang terbentuk sendiri.</p>
+        <div class="meta"><span class="tag">paling manhwa</span><span class="tag">menyatu ke wajah</span></div>
+      </button>
+      <button class="opt" type="button" data-k="shards" aria-pressed="false">
+        <h2>2 · Kepingan menyatu</h2><span class="play" data-play>Putar</span>
+        <p>Topeng datang sebagai puluhan kepingan yang berputar dalam 3D dari sekeliling, lalu mengunci satu per satu dari tengah ke luar dan menyatu jadi utuh. Kebalikan dari panel hero yang pecah.</p>
+        <div class="meta"><span class="tag">versi awal</span><span class="tag">3D asli (CSS)</span><span class="tag">nyambung dengan efek pecah</span></div>
+      </button>
+      <button class="opt" type="button" data-k="slam" aria-pressed="false">
+        <h2>3 · Hantaman dari depan</h2><span class="play" data-play>Putar</span>
+        <p>Selama charge, topeng melayang besar dan buram di antara kamera dan wajah kamu, seolah dekat dengan yang melihat. Di akhir, ia menghantam wajah: sedikit memipih, kilat putih, garis fokus, layar bergetar. Timing seperti panel aksi manhwa.</p>
+        <div class="meta"><span class="tag">paling bertenaga</span><span class="tag">sederhana</span></div>
+      </button>
+      <button class="opt" type="button" data-k="mesh" aria-pressed="false">
+        <h2>4 · Topeng 3D sungguhan</h2><span class="play" data-play>Putar</span>
+        <p>Topeng dijadikan objek 3D bervolume (Three.js) dengan cahaya ungu yang menyinari lekuknya. Ia turun sambil berputar beberapa kali, lalu berhenti tepat menghadap depan.</p>
+        <div class="meta"><span class="tag">paling 3D</span><span class="tag">lebih berat</span><span class="tag">kurang "manhwa"</span></div>
+      </button>
+      <button class="opt" type="button" data-k="descend" aria-pressed="false">
+        <h2>5 · Turun dan mengunci (versi sekarang)</h2><span class="play" data-play>Putar</span>
+        <p>Yang ada di halaman Awaken sekarang: topeng muncul di atas kepala, miring ke belakang, lalu turun dan berputar menghadap depan.</p>
+        <div class="meta"><span class="tag">sebagai pembanding</span></div>
+      </button>
+      <div class="note"><b>Cara kerja poni di atas topeng:</b> cukup satu foto. Topeng diletakkan di antara foto dan lapisan rambut yang dipotong dari foto yang sama, jadi poni selalu di depan topeng. Saat topeng dilepas, lapisan topeng hilang dan yang tersisa foto asli kamu, tetap dengan poni. Tekan <b>Lihat lapisan</b> untuk melihatnya dari samping.</div>
+      <div class="note"><b>Kenapa wajah tidak perlu menoleh:</b> semua gerakan 3D (miring, berputar, kepingan beterbangan) terjadi selama topeng masih melayang. Begitu sampai, topeng selalu menghadap depan, persis seperti wajah kamu di foto, jadi keduanya pas tanpa mengubah foto.</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage = $('#stage'), mk = $('#mk'), mimg = $('#mimg'), ink = $('#ink'), shardsEl = $('#shards'), eyes = $('#eyes'), flash = $('#flash'), burst = $('#burst');
+  let mode = 'shards2', p = 0, out = 0, charging = false, locked = false, auto = null, lockAt = 0, exploded = false;
+  const ff = $('#ff'), sh2 = $('#sh2'), seams = $('#seams'), eyes2 = $('#eyes2');
+  const CHARGE = () => mode === 'shards2' ? 2.3 : 1.6;
+  const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+
+  /* ---------- shared mask pixels (for the ink option and the 3D mesh) ---------- */
+  const maskImg = new Image(); maskImg.src = 'mask.png';
+  let MW = 0, MH = 0, mData = null, grow = null;
+  function hash(x, y) { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); }
+  function vnoise(x, y) { const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy, u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+    return (hash(ix, iy) * (1 - u) + hash(ix + 1, iy) * u) * (1 - v) + (hash(ix, iy + 1) * (1 - u) + hash(ix + 1, iy + 1) * u) * v; }
+  function prepInk() {
+    const r = mk.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 1.5);
+    MW = Math.max(2, Math.round(r.width * d)); MH = Math.max(2, Math.round(r.height * d));
+    ink.width = MW; ink.height = MH;
+    const c = document.createElement('canvas'); c.width = MW; c.height = MH; const g = c.getContext('2d');
+    g.drawImage(maskImg, 0, 0, MW, MH); mData = g.getImageData(0, 0, MW, MH).data;
+    // growth map: how early each pixel turns to ink. Starts at both eyes and the centre line, with some noise
+    grow = new Float32Array(MW * MH);
+    for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+      const u = x / MW, v = y / MH;
+      const e1 = Math.hypot((u - .33) * 1.4, v - .5), e2 = Math.hypot((u - .67) * 1.4, v - .5), cl = Math.abs(u - .5) * 1.7 + Math.abs(v - .45) * .25;
+      grow[y * MW + x] = Math.min(e1, e2, cl) * 1.55 + (vnoise(u * 9, v * 9) - .5) * .28 + (vnoise(u * 26, v * 26) - .5) * .08;
+    }
+  }
+  const out2d = ink.getContext('2d');
+  function drawInk(t, burn) {
+    if (!grow) return;
+    const img = out2d.createImageData(MW, MH), o = img.data, th = t * 1.25, bt = burn * 1.3;
+    for (let i = 0, n = MW * MH; i < n; i++) {
+      const a = mData[i * 4 + 3]; if (a < 8) continue;
+      const gv = grow[i], j = i * 4;
+      const shown = gv < th && !(burn > 0 && gv < bt);
+      const frontier = (gv < th && gv > th - .07) || (burn > 0 && gv >= bt && gv < bt + .07);
+      if (shown || frontier) {
+        let r = mData[j], gg = mData[j + 1], b = mData[j + 2];
+        if (frontier) { r = 225; gg = 195; b = 255; }
+        o[j] = r; o[j + 1] = gg; o[j + 2] = b; o[j + 3] = frontier ? Math.min(255, a + 40) : a;
+      }
+    }
+    out2d.putImageData(img, 0, 0);
+  }
+
+  /* ---------- shards ---------- */
+  const SH = [];
+  function buildShards() {
+    shardsEl.innerHTML = ''; SH.length = 0;
+    const cols = 5, rows = 7, pts = [];
+    for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
+      const ex = i === 0 || i === cols, ey = j === 0 || j === rows;
+      pts.push([i / cols + (ex ? 0 : (hash(i, j) - .5) * .12), j / rows + (ey ? 0 : (hash(j, i) - .5) * .1)]);
+    }
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const a = pts[j * (cols + 1) + i], b = pts[j * (cols + 1) + i + 1], c = pts[(j + 1) * (cols + 1) + i], d = pts[(j + 1) * (cols + 1) + i + 1];
+      for (const t of ((i + j) % 2 ? [[a, b, d], [a, d, c]] : [[a, b, c], [b, d, c]])) {
+        const el = document.createElement('div'); el.className = 'sh';
+        el.style.clipPath = `polygon(${t.map(q => `${(q[0] * 100).toFixed(2)}% ${(q[1] * 100).toFixed(2)}%`).join(',')})`;
+        const cx = (t[0][0] + t[1][0] + t[2][0]) / 3, cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
+        el.style.transformOrigin = `${(cx * 100).toFixed(1)}% ${(cy * 100).toFixed(1)}%`;
+        const ang = Math.atan2(cy - .5, cx - .5) + (Math.random() - .5) * .8, dist = .9 + Math.random() * .9;
+        SH.push({ el, d: Math.hypot(cx - .5, cy - .5), tx: Math.cos(ang) * dist * 160, ty: Math.sin(ang) * dist * 200 - 60, tz: 200 + Math.random() * 400,
+          rx: (Math.random() - .5) * 300, ry: (Math.random() - .5) * 300, rz: (Math.random() - .5) * 180 });
+        shardsEl.appendChild(el);
+      }
+    }
+  }
+  function drawShards(t, burn) {
+    for (const s of SH) {
+      // the centre pieces arrive first, the rim last
+      const k = burn > 0 ? 1 - smooth(s.d * .5, s.d * .5 + .5, burn) : easeOut(smooth(s.d * .55, s.d * .55 + .45, t));
+      const f = 1 - k;
+      s.el.style.opacity = burn > 0 ? String(k) : String(smooth(0, .25, k + .1));
+      s.el.style.transform = `translate3d(${(s.tx * f).toFixed(1)}px,${(s.ty * f).toFixed(1)}px,${(s.tz * f).toFixed(1)}px) rotateX(${(s.rx * f).toFixed(1)}deg) rotateY(${(s.ry * f).toFixed(1)}deg) rotateZ(${(s.rz * f).toFixed(1)}deg)`;
+    }
+  }
+
+  /* ---------- 2+: shards that orbit the head, fly in centre-first and lock under the hair ---------- */
+  // everything here is in me.png pixels (1086 x 1449); the fitted mask covers x 396-710, y 64-419
+  const F = { x0: 396, x1: 710, y0: 64, y1: 419, hx: 551, hy: 225, cx: 553, cy: 260 };
+  const S2 = [];
+  const NS = 'http://www.w3.org/2000/svg';
+  function buildShards2() {
+    sh2.innerHTML = ''; seams.innerHTML = ''; S2.length = 0;
+    const cols = 6, rows = 7, pts = [], cw = (F.x1 - F.x0) / cols, ch = (F.y1 - F.y0) / rows;
+    for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
+      const ex = i === 0 || i === cols, ey = j === 0 || j === rows;
+      pts.push([F.x0 + i * cw + (ex ? 0 : (hash(i + 3, j) - .5) * cw * .7), F.y0 + j * ch + (ey ? 0 : (hash(j + 7, i) - .5) * ch * .6)]);
+    }
+    const P = q => `${(q[0] / 10.86).toFixed(3)}% ${(q[1] / 14.49).toFixed(3)}%`;
+    const maxD = Math.hypot((F.x1 - F.x0) / 2, (F.y1 - F.y0) / 2);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const a = pts[j * (cols + 1) + i], b = pts[j * (cols + 1) + i + 1], c = pts[(j + 1) * (cols + 1) + i], d = pts[(j + 1) * (cols + 1) + i + 1];
+      for (const t of ((i + j) % 2 ? [[a, b, d], [a, d, c]] : [[a, b, c], [b, d, c]])) {
+        const el = document.createElement('div'); el.className = 's2';
+        const inner = document.createElement('i'); inner.style.clipPath = `polygon(${t.map(P).join(',')})`; el.appendChild(inner);
+        const cx = (t[0][0] + t[1][0] + t[2][0]) / 3, cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
+        el.style.transformOrigin = `${(cx / 10.86).toFixed(2)}% ${(cy / 14.49).toFixed(2)}%`;
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', `M${t.map(q => q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('L')}Z`); seams.appendChild(path);
+        const o = Math.min(1, Math.hypot(cx - F.cx, (cy - F.cy) * .8) / maxD);
+        S2.push({ el, path, cx, cy, o, th0: Math.random() * Math.PI * 2, rr: .8 + Math.random() * .45, del: Math.random() * .22,
+          sx: (Math.random() - .5) * 2, sy: (Math.random() - .5) * 2, sz: (Math.random() - .5) * 2, lift: (Math.random() - .5) * 60 });
+        sh2.appendChild(el);
+      }
+    }
+  }
+  function drawShards2(t, burn, now) {
+    const k = ff.clientWidth / 1086, T = now / 1000;
+    const shrink = 1 - .3 * smooth(0, .6, t);                     // the ring tightens as the charge builds
+    const lockGlow = locked ? Math.exp(-(now - lockAt) / 380) : 0;
+    const relGlow = burn > 0 ? 1 - smooth(.05, .4, burn) : 0;
+    for (const s of S2) {
+      let dx, dy, dz, rot, sc, op, glow, fx; 
+      if (burn > 0) {
+        // release: the seams light up first, then every piece is blown away from the face
+        const b = smooth(.12, 1, burn), e = 1 - Math.pow(1 - b, 3);
+        const vx = s.cx - F.hx, vy = s.cy - F.hy, vl = Math.hypot(vx, vy) || 1;
+        dx = vx / vl * 520 * e; dy = vy / vl * 420 * e - 60 * e; dz = 260 * e * (.5 + s.rr);
+        rot = 260 * e; sc = 1; op = 1 - smooth(.35, 1, burn); glow = relGlow; fx = b > 0;
+      } else {
+        const a = .42 + s.o * .4, fly = smooth(a, a + .15, t), fe = fly * fly;  // accelerates into place
+        const th = s.th0 + T * 1.25, R = 330 * shrink * s.rr;
+        const ox = F.hx + Math.cos(th) * R, oy = F.hy + Math.sin(th) * R * .2 + s.lift, oz = Math.sin(th) * R * .8;
+        dx = (ox - s.cx) * (1 - fe); dy = (oy - s.cy) * (1 - fe); dz = oz * (1 - fe);
+        rot = (T * 140 + s.th0 * 57) * (1 - fe);
+        sc = .5 + .512 * fe;                                    // a hair over 1 when landed so neighbours overlap
+        const app = smooth(s.del, s.del + .18, t), behind = Math.sin(th) < 0 && fly < .5;
+        op = app * (behind ? .35 : 1);
+        const landed = t >= a + .15 ? Math.max(0, 1 - (t - a - .15) / .1) : 0;
+        glow = Math.max(landed, lockGlow); fx = fly < 1;
+      }
+      s.el.style.opacity = op.toFixed(3);
+      s.el.style.transform = `translate3d(${(dx * k).toFixed(1)}px,${(dy * k).toFixed(1)}px,${(dz * k).toFixed(1)}px) rotateX(${(rot * s.sx).toFixed(1)}deg) rotateY(${(rot * s.sy).toFixed(1)}deg) rotateZ(${(rot * s.sz).toFixed(1)}deg) scale(${sc.toFixed(3)})`;
+      s.path.style.opacity = glow.toFixed(3);
+    }
+    // once every piece has landed, the whole mask replaces them, so no hairline gaps show between pieces
+    const whole = burn === 0 && t >= .99;
+    $('#mfull').style.opacity = whole ? '1' : '0'; sh2.style.visibility = whole ? 'hidden' : 'visible';
+    // one glow for every piece still in the air (cheaper than a filter per piece)
+    const flying = burn > 0 ? 1 - smooth(.5, 1, burn) : (t > 0 && t < .99 ? 1 : 0);
+    const f = flying ? 'drop-shadow(0 0 6px rgba(180,130,255,.9)) brightness(1.35)' : 'none';
+    if (sh2.style.filter !== f) sh2.style.filter = f;
+    const flick = .88 + .12 * Math.sin(now / 90) * Math.sin(now / 53);
+    eyes2.style.opacity = (smooth(.94, 1, t) * (1 - smooth(0, .25, burn)) * flick).toFixed(3);
+  }
+
+  /* ---------- real 3D mesh (Three.js) ---------- */
+  let three = null;
+  function initThree() {
+    if (three || !window.THREE) return three;
+    const T = window.THREE;
+    const cv = document.createElement('canvas'); cv.className = 'three'; stage.appendChild(cv);
+    const renderer = new T.WebGLRenderer({ canvas: cv, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    const scene = new T.Scene(), camera = new T.PerspectiveCamera(30, 1, .1, 20);
+    const VIEW = 1.9;                                           // the canvas shows 1.9 mask-heights, so a landed mask fills its spot exactly
+    camera.position.set(0, 0, (VIEW / 2) / Math.tan(15 * Math.PI / 180));
+    // volume from the mask's own alpha: blur it and use it as height, so the centre bulges like a real face mask
+    const S = 128, c = document.createElement('canvas'); c.width = S; c.height = Math.round(S / .664); const g = c.getContext('2d');
+    g.filter = 'blur(10px)'; g.drawImage(maskImg, 0, 0, c.width, c.height); const hd = g.getImageData(0, 0, c.width, c.height).data;
+    const geo = new T.PlaneGeometry(.664, 1, 80, 120), pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const u = pos.getX(i) / .664 + .5, v = .5 - pos.getY(i);
+      const px = Math.min(c.width - 1, Math.max(0, Math.round(u * (c.width - 1)))), py = Math.min(c.height - 1, Math.max(0, Math.round(v * (c.height - 1))));
+      pos.setZ(i, Math.pow(hd[(py * c.width + px) * 4 + 3] / 255, 1.4) * .16);
+    }
+    geo.computeVertexNormals();
+    const tex = new T.Texture(maskImg); tex.needsUpdate = true;
+    const mat = new T.MeshStandardMaterial({ map: tex, transparent: true, alphaTest: .25, metalness: .45, roughness: .28, side: T.DoubleSide });
+    const mesh = new T.Mesh(geo, mat); scene.add(mesh);
+    scene.add(new T.AmbientLight(0x6a5a90, .9));
+    const key = new T.DirectionalLight(0xffffff, 1.1); key.position.set(.6, 1, 2); scene.add(key);
+    const rim = new T.PointLight(0xb084ff, 2.2, 6); rim.position.set(-1, .3, 1); scene.add(rim);
+    three = { cv, renderer, scene, camera, mesh, VIEW };
+    sizeThree(); return three;
+  }
+  function sizeThree() {
+    if (!three) return;
+    const sr = stage.getBoundingClientRect(), r = mk.getBoundingClientRect();
+    const hpx = r.height * three.VIEW, wpx = hpx;               // square canvas centred on the mask spot
+    const left = r.left - sr.left + r.width / 2 - wpx / 2, top = r.top - sr.top + r.height / 2 - hpx / 2;
+    Object.assign(three.cv.style, { left: left + 'px', top: top + 'px', width: wpx + 'px', height: hpx + 'px' });
+    three.renderer.setSize(wpx, hpx, false); three.camera.aspect = 1; three.camera.updateProjectionMatrix();
+  }
+  function drawMesh(t, burn) {
+    if (!initThree()) return;
+    const m = three.mesh, d = easeOut(smooth(.05, .9, t));
+    m.visible = t > .02 && burn < 1;
+    m.position.set(0, .9 * (1 - d) + burn * .5, 0);
+    m.rotation.set(.5 * (1 - d), Math.PI * 4 * (1 - d) + burn * 3, 0);
+    const sc = (.55 + .45 * d) * (1 + burn * .15); m.scale.set(sc, sc, sc);
+    m.material.opacity = smooth(0, .15, t) * (1 - burn); m.material.transparent = true;
+    three.renderer.render(three.scene, three.camera);
+  }
+
+  /* ---------- CSS 3D options: the current descend and the slam ---------- */
+  function drawDescend(t, burn) {
+    const d = smooth(.12, .85, t), app = smooth(0, .3, t);
+    mimg.style.opacity = String(app * (1 - burn));
+    mimg.style.filter = burn > 0 ? `blur(${burn * 6}px) brightness(${1 + burn * 1.5})` : 'none';
+    mimg.style.transform = `translateY(${(-75 * (1 - d)).toFixed(1)}%) rotateX(${(68 * (1 - d)).toFixed(1)}deg) rotateZ(${(Math.sin(performance.now() / 370) * 8 * (1 - d)).toFixed(2)}deg) scale(${(.55 + .45 * d) * (1 + burn * .2)})`;
+  }
+  function drawSlam(t, burn) {
+    // the mask hangs between the viewer and the face, big and out of focus, then the end of the charge slams it on
+    const show = smooth(0, .2, t), near = smooth(0, .86, t), slam = smooth(.86, .96, t), land = smooth(.96, 1, t);
+    const sway = Math.sin(performance.now() / 300) * 1.5 * (1 - slam);
+    const sc = (2.6 - .5 * near) * (1 - slam) + slam;           // 2.6 -> 2.1 while charging, then down to 1
+    const sq = 1 + .07 * Math.sin(land * Math.PI);             // a small squash when it lands
+    mimg.style.opacity = String(show * (.55 + .45 * slam) * (1 - burn));
+    const blur = burn > 0 ? burn * 6 : 7 * (1 - slam) + 3 * Math.sin(slam * Math.PI);
+    mimg.style.filter = `blur(${blur.toFixed(1)}px)` + (burn > 0 ? ` brightness(${1 + burn * 1.5})` : '');
+    mimg.style.transform = `translateY(${(14 * (1 - slam)).toFixed(1)}%) rotateZ(${sway.toFixed(2)}deg) scale(${(sc * sq * (1 + burn * .2)).toFixed(3)}, ${(sc / sq * (1 + burn * .2)).toFixed(3)})`;
+  }
+
+  /* ---------- shared: lock moment, eyes, release ---------- */
+  function lockFx() {
+    if (reduce) return;
+    flash.animate([{ opacity: 0 }, { opacity: 1, offset: .15 }, { opacity: 0 }], { duration: 420 });
+    if (mode === 'slam' || mode === 'shards2') {
+      burst.animate([{ opacity: 1, transform: 'scale(.5)' }, { opacity: 0, transform: 'scale(1.3)' }], { duration: 520, easing: 'cubic-bezier(.15,.85,.3,1)' });
+      stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+    }
+  }
+  function render() {
+    const t = p, burn = out;
+    mimg.style.display = (mode === 'descend' || mode === 'slam') ? '' : 'none';
+    ff.style.display = mode === 'shards2' ? '' : 'none'; mk.style.display = mode === 'shards2' ? 'none' : '';
+    ink.style.display = mode === 'ink' ? '' : 'none';
+    shardsEl.style.display = mode === 'shards' ? '' : 'none';
+    if (three) three.cv.style.display = mode === 'mesh' ? '' : 'none';
+    if (mode === 'ink') drawInk(t, burn);
+    else if (mode === 'shards') drawShards(t, burn);
+    else if (mode === 'shards2') drawShards2(t, burn, performance.now());
+    else if (mode === 'mesh') drawMesh(t, burn);
+    else if (mode === 'descend') drawDescend(t, burn);
+    else drawSlam(t, burn);
+    eyes.style.opacity = String(smooth(.9, 1, t) * (1 - burn));
+    $('#meter').style.width = (t * 100).toFixed(1) + '%';
+  }
+
+  /* ---------- driving the progress ---------- */
+  let last = performance.now();
+  function loop(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (auto) auto(dt);
+    if (exploded) { p = 1; out = 0; }
+    else if (charging) { p = Math.min(1, p + dt / CHARGE()); out = 0; }
+    else if (p > 0) { out = Math.min(1, out + dt / .7); if (out >= 1) { p = 0; out = 0; locked = false; $('#state').textContent = 'Pilih cara, lalu tahan.'; } }
+    if (p >= .97 && !locked) { locked = true; lockAt = performance.now(); lockFx(); $('#state').textContent = 'Terkunci. Lepas untuk melepaskan topeng.'; }
+    render();
+    requestAnimationFrame(loop);
+  }
+  const hold = $('#hold');
+  const start = () => { auto = null; charging = true; out = 0; hold.classList.add('on'); $('#state').textContent = 'Charging…'; };
+  const stop = () => { if (!charging) return; charging = false; hold.classList.remove('on'); };
+  hold.addEventListener('pointerdown', e => { e.preventDefault(); start(); try { hold.setPointerCapture(e.pointerId); } catch (_) {} });
+  hold.addEventListener('pointerup', stop); hold.addEventListener('pointercancel', stop);
+  hold.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); start(); } });
+  hold.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') stop(); });
+  // auto play: charge 1.6s, stay locked 1.2s, then release
+  function playAuto() {
+    let t = 0; p = 0; out = 0; locked = false;
+    auto = dt => {
+      t += dt;
+      if (t < CHARGE() + 1.3) { charging = true; }
+      else { charging = false; auto = null; hold.classList.remove('on'); }
+    };
+    hold.classList.add('on');
+  }
+  document.querySelectorAll('.opt').forEach(b => b.addEventListener('click', e => {
+    document.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    mode = b.dataset.k; p = 0; out = 0; locked = false; setExploded(false);
+    if (mode === 'mesh') initThree();
+    if (e.target.closest('[data-play]')) playAuto();
+  }));
+  const layersBtn = $('#layers');
+  function setExploded(on) {
+    exploded = on; stage.classList.toggle('exploded', on); layersBtn.setAttribute('aria-pressed', String(on));
+    layersBtn.textContent = on ? 'Kembali' : 'Lihat lapisan';
+    if (!on) { p = 0; out = 0; locked = false; }
+  }
+  layersBtn.addEventListener('click', () => {
+    if (mode !== 'shards2') document.querySelector('.opt[data-k="shards2"]').click();
+    auto = null; charging = false; hold.classList.remove('on');
+    setExploded(!exploded);
+  });
+  addEventListener('resize', () => { if (maskImg.complete) prepInk(); sizeThree(); });
+  maskImg.onload = () => { prepInk(); buildShards(); buildShards2(); requestAnimationFrame(loop); };
+  if (maskImg.complete && maskImg.naturalWidth) maskImg.onload();
+})();
+</script>

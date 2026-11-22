@@ -1,0 +1,128 @@
+<title>Sound Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one row per sound moment; each row lists every candidate as a play button you can pick. Single dark board by choice. */
+:root{--bg:#121019;--panel:#1b1824;--line:#2e2a3a;--fg:#ece8f5;--muted:#a49eb6;--violet:#9b7fe6;--amber:#ffd166;--pick:#46d39a;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Barlow,system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1000px;margin-inline:auto;padding-inline:20px;padding-block:36px 120px;display:flex;flex-direction:column;gap:22px}
+h1{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:clamp(32px,5vw,46px);letter-spacing:.02em}
+.lede{margin:6px 0 0;color:var(--muted);max-width:70ch}
+.row{background:var(--panel);border:1px solid var(--line);padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.row header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px}
+.row h2{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:24px;letter-spacing:.03em}
+.row header p{margin:0;color:var(--muted);font-size:14px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{display:flex;align-items:stretch;border:1px solid var(--line);background:#14121b}
+.opt button{border:0;background:none;color:var(--fg);font:inherit;font-size:14px;cursor:pointer;padding:9px 12px;display:flex;align-items:center;gap:8px}
+.opt .play:hover{background:rgba(255,255,255,.06)}
+.opt .play::before{content:"";width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.opt.hold .play::before{border:0;width:9px;height:9px;border-radius:50%;background:currentColor}
+.opt .play.on{color:var(--amber)}
+.opt .pick{border-left:1px solid var(--line);color:var(--muted);font-size:13px;padding:9px 10px}
+.opt .pick[aria-pressed="true"]{color:#0b1a12;background:var(--pick);font-weight:600}
+.tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:1px 6px;border:1px solid currentColor;border-radius:2px}
+.tag.v1{color:#8d88a0}.tag.v2{color:var(--violet)}.tag.file{color:#7cc9a8}.tag.you{color:var(--amber)}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(18,16,25,.95);border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.bar code{flex:1;min-width:0;font-size:13px;color:var(--muted);white-space:normal;overflow-wrap:anywhere}
+.bar button{font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--pick);background:none;color:var(--pick);cursor:pointer}
+.start{align-self:flex-start;font:inherit;font-weight:600;padding:10px 18px;background:var(--violet);color:#120c22;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Sound Lab</h1>
+    <p class="lede">Bandingkan suara buatan kode (versi lama dan versi baru) dengan file yang kamu kumpulkan. Tombol bulat = tahan untuk mendengar (charge). Tekan "pilih" pada favorit tiap baris; pilihanmu terkumpul di bar bawah untuk dikirim ke saya.</p>
+  </header>
+  <button class="start" id="start" type="button">Nyalakan suara</button>
+  <div id="rows"></div>
+</div>
+<div class="bar"><code id="summary">Belum ada pilihan.</code><button type="button" id="copy">Copy pilihan</button></div>
+
+<script src="sfx.js"></script>
+<script>
+(() => {
+  const ROWS = [
+    { id: 'ding', name: 'Buka kartu / status', when: 'Saat status window atau kartu muncul', opts: [
+      { k: 'you', label: 'card whoosh (asli)', f: 'card-whoosh-original' },
+      { k: 'you', label: 'card whoosh A (dipotong)', play: () => SFX.play('sfx/card-whoosh-a.mp3', { vol: .85 }) },
+      { k: 'you', label: 'card whoosh B (dipakai)', play: () => SFX.cardWhoosh() },
+      { k: 'v1', label: 'Kode lama', play: () => SFX.v1.ding() },
+      { k: 'v2', label: 'Kode baru', play: () => SFX.ding() },
+      { k: 'file', label: 'ding-1', f: 'ding-1' }, { k: 'file', label: 'ding-2', f: 'ding-2' }, { k: 'file', label: 'ding-3', f: 'ding-3' } ] },
+    { id: 'card', name: 'Card flip', when: 'Saat kartu status berbalik', opts: [
+      { k: 'v2', label: 'Kode baru', play: () => SFX.cardFlip() },
+      { k: 'file', label: 'card-flip-1', f: 'card-flip-1' }, { k: 'file', label: 'card-flip-2', f: 'card-flip-2' }, { k: 'file', label: 'card-flip-3', f: 'card-flip-3' } ] },
+    { id: 'click', name: 'UI click', when: 'Tombol dan dock', opts: [
+      { k: 'v2', label: 'Kode baru', play: () => SFX.click() },
+      { k: 'file', label: 'ui-click-1', f: 'ui-click-1', vol: .5 }, { k: 'file', label: 'ui-click-2', f: 'ui-click-2', vol: .5 }, { k: 'file', label: 'ui-click-3', f: 'ui-click-3', vol: .5 } ] },
+    { id: 'crack', name: 'Crack', when: 'Retakan kecil saat panel ditahan (berulang)', opts: [
+      { k: 'v2', label: 'Kode baru', play: () => { [0, 140, 260, 360].forEach((d, i) => setTimeout(() => SFX.crack(.3 + i * .2), d)); } },
+      ...['crack-synth-1-tiny-crck', 'crack-synth-2-spreading', 'crack-synth-3-ice-stress', 'crack-synth-4-panel-crack-reverb', 'crack-synth-5-hairline', 'crack-found-1-oga-glass_breaking_02', 'crack-found-2-oga-glass_breaking_04', 'crack-found-3-oga-glass_hit_01', 'crack-found-4-oga-multiple_cracks_2', 'crack-hybrid-glasshit-plus-synth']
+        .map(f => ({ k: 'file', label: f.replace('crack-', '').replace('-oga-', ' · '), f })) ] },
+    { id: 'shatter', name: 'Shatter', when: 'Panel pecah, pindah ke Awaken', opts: [
+      { k: 'v2', label: 'Kode baru', play: () => SFX.shatter() },
+      { k: 'file', label: 'shatter-1', f: 'shatter-1' }, { k: 'file', label: 'shatter-2', f: 'shatter-2' }, { k: 'file', label: 'shatter-3', f: 'shatter-3' },
+      { k: 'you', label: 'draft kamu (asli)', f: 'shatter-draft-yours' },
+      { k: 'you', label: 'draft kamu (dirapikan, dipakai di hero)', play: () => SFX.play('sfx/shatter-yours.mp3', { vol: .95 }) } ] },
+    { id: 'charge', name: 'Charge', when: 'Saat menahan di halaman Awaken (tahan tombolnya)', hold: true, opts: [
+      { k: 'v1', label: 'Kode lama', start: () => SFX.v1.chargeStart(), stop: () => SFX.v1.chargeStop() },
+      { k: 'v2', label: 'Kode baru', start: () => SFX.chargeStart(), stop: () => SFX.chargeStop() },
+      { k: 'file', label: 'charge-1', f: 'charge-1' }, { k: 'file', label: 'charge-2-loop', f: 'charge-2-loop', loop: true }, { k: 'file', label: 'charge-3-loop (diperbaiki)', start: () => SFX.loopStart('sfx/charge-3-loop.wav'), stop: () => SFX.loopStop() } ] },
+    { id: 'release', name: 'Release', when: 'Saat dilepas di halaman Awaken', opts: [
+      { k: 'v1', label: 'Kode lama', play: () => SFX.v1.release(1) },
+      { k: 'v2', label: 'Kode baru', play: () => SFX.release(1) },
+      { k: 'you', label: 'explosion kamu (dipakai)', play: () => SFX.explosion(1) },
+      { k: 'file', label: 'release-1', f: 'release-1' }, { k: 'file', label: 'release-2', f: 'release-2' }, { k: 'file', label: 'release-3', f: 'release-3' } ] },
+  ];
+  const TAG = { v1: 'kode lama', v2: 'kode baru', file: 'file', you: 'kamu' };
+  const picks = {};
+  const rowsEl = document.getElementById('rows');
+  let current = null;
+
+  function playFile(o, loop) {
+    const a = new Audio('sfx/' + o.f + '.mp3'); a.volume = o.vol ?? .9; a.loop = !!loop; a.play().catch(() => {}); return a;
+  }
+  ROWS.forEach(r => {
+    const row = document.createElement('section'); row.className = 'row';
+    row.innerHTML = `<header><h2>${r.name}</h2><p>${r.when}</p></header><div class="opts"></div>`;
+    const box = row.querySelector('.opts');
+    r.opts.forEach(o => {
+      const el = document.createElement('div'); el.className = 'opt' + (r.hold ? ' hold' : '');
+      el.innerHTML = `<button class="play" type="button"><span class="tag ${o.k}">${TAG[o.k]}</span>${o.label}</button><button class="pick" type="button" aria-pressed="false">pilih</button>`;
+      const play = el.querySelector('.play'), pick = el.querySelector('.pick');
+      if (r.hold) {
+        let h = null;
+        const down = e => { e.preventDefault(); SFX.unlock(); play.classList.add('on'); h = o.f ? playFile(o, o.loop) : (o.start(), null); };
+        const up = () => { if (!play.classList.contains('on')) return; play.classList.remove('on'); if (h) { h.pause(); h = null; } else if (o.stop) o.stop(); };
+        play.addEventListener('pointerdown', down); play.addEventListener('pointerup', up); play.addEventListener('pointerleave', up); play.addEventListener('pointercancel', up);
+        play.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) down(e); });
+        play.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') up(); });
+      } else {
+        play.addEventListener('click', () => { SFX.unlock(); if (current && current.pause) current.pause(); current = o.f ? playFile(o) : (o.play(), null); });
+      }
+      pick.addEventListener('click', () => {
+        box.querySelectorAll('.pick').forEach(p => p.setAttribute('aria-pressed', String(p === pick)));
+        picks[r.id] = `${o.label}`; summary();
+      });
+      box.appendChild(el);
+    });
+    rowsEl.appendChild(row);
+  });
+  function summary() {
+    const s = ROWS.filter(r => picks[r.id]).map(r => `${r.name}: ${picks[r.id]}`).join(' · ');
+    document.getElementById('summary').textContent = s || 'Belum ada pilihan.';
+  }
+  document.getElementById('copy').addEventListener('click', () => {
+    const t = document.getElementById('summary').textContent;
+    try { navigator.clipboard.writeText(t).then(() => { document.getElementById('copy').textContent = 'Tersalin'; }, sel); } catch (e) { sel(); }
+    function sel() { const r = document.createRange(); r.selectNodeContents(document.getElementById('summary')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  });
+  const start = document.getElementById('start');
+  start.addEventListener('click', () => { SFX.setEnabled(true); SFX.ding(); start.textContent = 'Suara menyala'; start.disabled = true; });
+  if (SFX.enabled) { start.textContent = 'Suara menyala (klik apa saja untuk mulai)'; }
+})();
+</script>

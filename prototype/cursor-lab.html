@@ -1,0 +1,155 @@
+<title>Cursor Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: a choice of three cursor styles on top, then the two real page moods side by side (paper hero, dark Awaken) to move the cursor through. Each zone carries its own fixed colours on purpose, so no theme switch. */
+:root{--ink:#141214;--paper:#f3efe6;--red:#d7262e;--violet:#a47bff;--amber:#ffd166;--line:#d9d2c4;--muted:#5e5850}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Barlow,system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:20px;padding-block:28px 60px;display:flex;flex-direction:column;gap:20px}
+h1{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:clamp(32px,5vw,46px)}
+.lede{margin:4px 0 0;color:var(--muted);max-width:74ch}
+.pick{display:flex;flex-wrap:wrap;gap:10px}
+.pick button{font:inherit;font-weight:600;padding:10px 16px;border:1.5px solid var(--ink);background:none;color:var(--ink);cursor:pointer;text-align:left}
+.pick button small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.pick button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.pick button[aria-pressed="true"] small{color:#cfc8bb}
+.zones{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:820px){.zones{grid-template-columns:minmax(0,1fr)}}
+.zone{position:relative;min-height:440px;padding:22px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.zone h2{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.zone p{margin:0;font-size:15px}
+.paper{background:var(--paper);border:1.5px solid var(--ink);color:var(--ink)}
+.dark{background:radial-gradient(ellipse at 50% 30%,#2b1856 0%,#120b22 55%,#07050d 100%);color:#ede9f6;border:1.5px solid #2b2440}
+.dark p{color:#cfc8de}
+.target{position:relative;flex:1;min-height:220px;border:1.5px solid currentColor;display:grid;place-items:center;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none}
+.paper .target{background:#fff url(me-hero.png) 50% 12%/62% auto no-repeat}
+.dark .target{border-color:#4a3d6e;background:url(me.png) 50% 6%/58% auto no-repeat}
+.target span{position:absolute;bottom:8px;left:8px;font-size:12px;letter-spacing:.06em;padding:2px 8px;background:var(--ink);color:#fff}
+.dark .target span{background:#2b2145}
+.row{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.row a{color:inherit;font-weight:600}
+.row button{font:inherit;font-weight:600;padding:8px 14px;border:1.5px solid currentColor;background:none;color:inherit}
+.row input{font:inherit;padding:8px 10px;border:1.5px solid currentColor;background:transparent;color:inherit;min-width:0;width:170px}
+.notes{border:1.5px solid var(--ink);padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.notes h2{margin:0;font-family:"Barlow Condensed",sans-serif;font-size:22px}
+.notes ul{margin:0;padding-left:20px}
+.notes li{margin:2px 0}
+
+/* custom cursor (option A): dot + ring that follows with a little lag */
+body.cA .zone, body.cA .zone *{cursor:none}
+body.cA .zone input{cursor:text}
+.cur{position:fixed;left:0;top:0;pointer-events:none;z-index:50;opacity:0;transition:opacity .2s}
+.cur.on{opacity:1}
+.cur .dot{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--ink);transition:transform .15s,background .2s}
+.cur .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:1.5px solid var(--ink);transition:width .25s,height .25s,margin .25s,border-color .2s,background .2s}
+.cur .fill{position:absolute;inset:-1.5px;border-radius:50%;-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%)}
+.cur.big .ring{width:64px;height:64px;margin:-32px 0 0 -32px;background:rgba(215,38,46,.08);border-color:var(--red)}
+.cur.big .dot{background:var(--red)}
+.cur.link .ring{width:46px;height:46px;margin:-23px 0 0 -23px}
+.cur.link .dot{transform:scale(0)}
+.cur.hide{opacity:0}
+.cur.night .dot{background:#efe6ff;box-shadow:0 0 8px 2px rgba(164,123,255,.9)}
+.cur.night .ring{border-color:rgba(190,160,255,.75);box-shadow:0 0 12px rgba(164,123,255,.45)}
+.cur.night.big .ring{background:rgba(164,123,255,.1);border-color:#c9adff}
+.spark{position:fixed;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#d9c2ff;box-shadow:0 0 6px #a47bff;pointer-events:none;z-index:49}
+
+/* option B: native cursor drawn as an image (no lag at all) */
+body.cB .paper, body.cB .paper *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 L3 22 L8.5 17 L12.5 26 L16 24.5 L12 15.8 L19.5 15.5 Z' fill='%23141214' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M3 2 L3 9 L8 6.5 Z' fill='%23d7262e'/%3E%3C/svg%3E") 3 2,auto}
+body.cB .dark, body.cB .dark *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 L3 22 L8.5 17 L12.5 26 L16 24.5 L12 15.8 L19.5 15.5 Z' fill='%23140c26' stroke='%23c9adff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M3 2 L3 9 L8 6.5 Z' fill='%23ffd166'/%3E%3C/svg%3E") 3 2,auto}
+body.cB .zone input{cursor:text}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.cur .ring,.cur .dot{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Cursor Lab</h1>
+    <p class="lede">Pilih gaya cursor, lalu gerakkan mouse di dua area di bawah: kiri seperti halaman utama (kertas), kanan seperti halaman Awaken. Coba arahkan ke foto, <b>tahan klik di foto</b>, arahkan ke link, dan klik kolom isian.</p>
+  </header>
+
+  <div class="pick" role="group" aria-label="Cursor style">
+    <button type="button" data-c="A" aria-pressed="true">A · Titik + cincin (rekomendasi)<small>Cincin mengikuti sedikit terlambat, membesar di foto, terisi saat ditahan</small></button>
+    <button type="button" data-c="B" aria-pressed="false">B · Panah bergaya tinta<small>Cursor biasa tapi digambar ulang: hitam + ujung merah / ungu + ujung kuning</small></button>
+    <button type="button" data-c="C" aria-pressed="false">C · Cursor bawaan<small>Sebagai pembanding</small></button>
+  </div>
+
+  <div class="zones">
+    <section class="zone paper" data-theme="paper">
+      <h2>Halaman utama</h2>
+      <p>Kertas, tinta hitam, satu warna merah.</p>
+      <div class="target" data-target><span>Foto · tahan</span></div>
+      <div class="row"><a href="#" onclick="return false">Link proyek ↗</a><button type="button">Tombol</button><input placeholder="Kolom isian" aria-label="Contoh kolom isian"></div>
+    </section>
+    <section class="zone dark" data-theme="night">
+      <h2>Awaken</h2>
+      <p>Gelap, ungu, cahaya.</p>
+      <div class="target" data-target><span>Foto · tahan untuk charge</span></div>
+      <div class="row"><a href="#" onclick="return false">Link ↗</a><button type="button">Tombol</button><input placeholder="Kolom isian" aria-label="Contoh kolom isian"></div>
+    </section>
+  </div>
+
+  <div class="notes">
+    <h2>Saran saya: A</h2>
+    <ul>
+      <li>Satu sistem untuk kedua halaman: hitam dan merah di halaman kertas, lalu otomatis jadi ungu menyala dengan percikan kecil di Awaken.</li>
+      <li>Cincinnya punya fungsi, bukan sekadar hiasan: membesar di foto ("ini bisa diklik") dan terisi saat kamu menahan klik, jadi pengunjung langsung paham fitur tahan untuk pecah / charge.</li>
+      <li>Di HP dan tablet cursor tidak ada, jadi semua ini otomatis mati. Di kolom isian tetap memakai cursor teks biasa.</li>
+      <li>B paling aman dan tanpa jeda, cocok kalau A terasa terlalu ramai. Cursor seperti ini lebih baik dibuat dengan kode (SVG) daripada image generator: ukurannya cuma 28 px dan harus tajam.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="cur" id="cur" aria-hidden="true"><div class="ring"><div class="fill" id="fill"></div></div><div class="dot"></div></div>
+
+<script>
+(() => {
+  const cur = document.getElementById('cur'), fill = document.getElementById('fill');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(pointer: fine)').matches;
+  let style = 'A', x = -100, y = -100, rx = -100, ry = -100, inZone = null, holding = false, hold = 0, lastSpark = 0;
+  document.body.classList.add('cA');
+  document.querySelectorAll('.pick button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.pick button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    style = b.dataset.c; document.body.classList.remove('cA', 'cB'); if (style !== 'C') document.body.classList.add('c' + style);
+  }));
+  addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    x = e.clientX; y = e.clientY;
+    const z = e.target.closest('.zone'); inZone = z;
+    const on = style === 'A' && !!z && fine;
+    cur.classList.toggle('on', on);
+    if (!z) return;
+    cur.classList.toggle('night', z.dataset.theme === 'night');
+    cur.classList.toggle('big', !!e.target.closest('[data-target]'));
+    cur.classList.toggle('link', !!e.target.closest('a,button'));
+    cur.classList.toggle('hide', !!e.target.closest('input'));
+  });
+  document.addEventListener('pointerleave', () => cur.classList.remove('on'));
+  document.querySelectorAll('[data-target]').forEach(t => {
+    t.addEventListener('pointerdown', () => { holding = true; });
+  });
+  addEventListener('pointerup', () => { holding = false; });
+  function spark() {
+    const s = document.createElement('i'); s.className = 'spark'; document.body.appendChild(s);
+    const a = Math.random() * Math.PI * 2, d = 14 + Math.random() * 22;
+    s.animate([{ transform: `translate(${x}px,${y}px) scale(1)`, opacity: 1 }, { transform: `translate(${x + Math.cos(a) * d}px,${y + Math.sin(a) * d - 10}px) scale(.2)`, opacity: 0 }],
+      { duration: 600 + Math.random() * 300, easing: 'cubic-bezier(.2,.7,.3,1)' }).onfinish = () => s.remove();
+  }
+  let last = performance.now();
+  function loop(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    const k = reduce ? 1 : 1 - Math.pow(.0006, dt);        // the ring catches up in roughly a tenth of a second
+    rx += (x - rx) * k; ry += (y - ry) * k;
+    cur.style.transform = `translate(${x}px,${y}px)`;
+    cur.querySelector('.ring').style.transform = `translate(${(rx - x).toFixed(1)}px,${(ry - y).toFixed(1)}px)`;
+    hold = holding ? Math.min(1, hold + dt / 1.4) : Math.max(0, hold - dt * 3);
+    const night = cur.classList.contains('night');
+    fill.style.background = `conic-gradient(${night ? '#ffd166' : '#d7262e'} ${(hold * 360).toFixed(1)}deg, transparent 0)`;
+    if (night && style === 'A' && inZone && !reduce && now - lastSpark > (holding ? 40 : 140) && cur.classList.contains('on')) { lastSpark = now; const moved = Math.hypot(x - rx, y - ry) > 3; if (holding || (moved && Math.random() < .6)) spark(); }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>

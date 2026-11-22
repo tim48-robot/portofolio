@@ -1,0 +1,738 @@
+<title>Awaken</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root{ --aura:#a855f7; --hot:#f3e8ff; --p:0; --charge:0; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#030207;color:#ece9f5;font-family:Inter,system-ui,sans-serif;overflow-x:hidden}
+
+  .hero{position:relative;min-height:100vh;min-height:100svh;overflow:hidden;isolation:isolate}
+  #gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+  #gl.shake{animation:shake .45s cubic-bezier(.3,.7,.4,1)}
+  @keyframes shake{0%,100%{transform:translate(0,0)}10%{transform:translate(-14px,8px)}25%{transform:translate(12px,-10px)}40%{transform:translate(-8px,6px)}60%{transform:translate(5px,-4px)}80%{transform:translate(-2px,2px)}}
+
+  /* the stage defines where your portrait is drawn (the WebGL shader reads its position) */
+  .stage{position:absolute;z-index:2;right:1vw;bottom:0;height:min(98vh,1100px);aspect-ratio:6/7;pointer-events:none}
+  .hit{position:absolute;left:18%;right:18%;top:26%;bottom:0;pointer-events:auto;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;border:0;padding:0;background:none;color:inherit;font:inherit}
+  .hit:focus-visible{outline:1px dashed color-mix(in srgb,var(--hot) 55%,transparent);outline-offset:-10px}
+  .hint{position:absolute;left:50%;bottom:max(1.1rem,env(safe-area-inset-bottom));translate:-50% 0;z-index:5;font:600 .75rem 'JetBrains Mono',monospace;letter-spacing:.24em;color:#b9b3cc;
+        white-space:nowrap;opacity:calc(1 - var(--p) * 1.2);pointer-events:none;text-align:center;text-shadow:0 1px 8px #030207}
+  .hint .coarse{display:none}
+  @media (pointer:coarse){.hint .fine{display:none}.hint .coarse{display:inline}}
+
+  .intro{position:relative;z-index:3;max-width:560px;padding:0 0 0 6vw;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;pointer-events:none}
+  .intro > *{pointer-events:auto}
+  .tag{font:600 .78rem 'JetBrains Mono',monospace;letter-spacing:.3em;color:var(--aura);text-transform:uppercase}
+  h1{font-family:'Bebas Neue',Impact,sans-serif;font-weight:400;font-size:clamp(3.8rem,9vw,9rem);line-height:.86;margin:.7rem 0 1rem;color:#f7f5ff;
+     text-shadow:0 0 calc(var(--p) * 36px) var(--aura),0 0 calc(var(--p) * 6px) var(--hot)}
+  .tagline{max-width:36ch;color:#b8b3c8;line-height:1.65}
+
+  .btns{display:flex;gap:1rem;margin-top:1.6rem;flex-wrap:wrap}
+  .btn{font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.18em;font-size:1.15rem;padding:.8rem 1.7rem;text-decoration:none;color:#f5f3ff;
+       border:1px solid color-mix(in srgb,var(--aura) 60%,transparent);background:rgba(8,6,16,.4);transition:.25s}
+  .btn.primary{background:var(--aura);color:#0a0612;border-color:var(--aura)}
+  .btn:hover{box-shadow:0 0 25px var(--aura);transform:translateY(-2px)}
+
+
+  .burst{position:absolute;z-index:1;width:250vmax;height:250vmax;translate:-50% -50%;pointer-events:none;
+         background:repeating-conic-gradient(from 0deg,#07040d 0 .5deg,transparent .5deg 3.6deg);
+         -webkit-mask:radial-gradient(circle,transparent 9%,#000 15%,#000 30%,transparent 46%);mask:radial-gradient(circle,transparent 9%,#000 15%,#000 30%,transparent 46%);
+         animation:burst .62s cubic-bezier(.15,.85,.3,1) forwards}
+  @keyframes burst{0%{opacity:1;transform:scale(.45) rotate(0deg)}70%{opacity:.9}100%{opacity:0;transform:scale(var(--s)) rotate(4deg)}}
+
+  /* status: the original violet-sheet type (Barlow Condensed caps, a ruled title, amber only for values that move),
+     set inside the ornate violet frame */
+  .sheet{visibility:hidden;position:relative;margin-top:1.6rem;width:min(470px,100%);color:#fff;font-family:'Barlow Condensed','Arial Narrow',sans-serif;text-transform:uppercase;
+         background:url(status-frame.webp) center/100% 100% no-repeat;padding:2.2rem 2.7rem 2.3rem;filter:drop-shadow(0 16px 30px rgba(8,4,20,.6))}
+  .sheet-t{font-weight:600;font-size:1.85rem;letter-spacing:.06em;text-align:center;line-height:1}
+  .sheet-rule{height:2px;margin:.85rem -.5rem 1.1rem;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.8);transform-origin:center}
+  .sheet-rows{display:grid;gap:.55rem;margin:0}
+  .sheet-rows > div{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-size:1.05rem;letter-spacing:.04em}
+  .sheet-rows dt{font-weight:400}
+  .sheet-rows dd{margin:0;font-weight:600;text-align:right}
+  .sheet .amber{color:#ffd166;font-variant-numeric:tabular-nums}
+  .meter{display:block;width:clamp(100px,30vw,150px);height:6px;background:rgba(25,12,55,.45);align-self:center}
+  .meter::after{content:"";display:block;height:100%;width:calc(max(var(--p) * 70%, var(--charge) * 100%));background:#ffd166}
+  .sheet .pix{position:absolute;inset:0;display:grid;pointer-events:none}
+  .sheet .pix i{opacity:0;background:#8a6fd0}
+  .back{position:fixed;top:1rem;left:1rem;z-index:10;font:600 .72rem 'JetBrains Mono',monospace;letter-spacing:.12em;color:#cfcbe0;text-decoration:none;
+        padding:.5rem .8rem;border:1px solid rgba(255,255,255,.14);background:rgba(10,8,18,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .back:hover{color:#fff;border-color:var(--aura)}
+  @media (prefers-reduced-motion: reduce){.burst{animation:none !important}#gl.shake{animation:none}}
+  .controls{position:fixed;left:50%;bottom:max(1rem,env(safe-area-inset-bottom));translate:-50% 0;z-index:10;display:flex;flex-wrap:wrap;justify-content:center;gap:.25rem;align-items:center;width:max-content;max-width:calc(100vw - 2rem);
+            padding:.4rem;border-radius:18px;background:rgba(10,8,18,.75);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:96vw}
+  .chip{border:0;cursor:pointer;font:600 .72rem Inter,sans-serif;letter-spacing:.04em;color:#cfcbe0;background:transparent;padding:.45rem .7rem;border-radius:999px;display:flex;gap:.4rem;align-items:center}
+  .chip i{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+  .chip.on{background:rgba(255,255,255,.12);color:#fff}
+  .sep{width:1px;height:18px;background:rgba(255,255,255,.14);margin:0 .2rem}
+  label.chip input{display:none}
+  .controls,.hud{display:none!important}
+  html.dev .controls{display:flex!important}
+  html.dev .hud{display:block!important}
+  .pills{position:fixed;top:1rem;right:1rem;z-index:10;display:flex;gap:.4rem}
+  .pills .chip{border:1px solid rgba(255,255,255,.14);background:rgba(10,8,18,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .hud{position:fixed;top:3.4rem;right:1rem;z-index:10;font:400 .66rem 'JetBrains Mono',monospace;color:#6f6a83;letter-spacing:.08em;text-align:right}
+  .nogl{position:absolute;inset:0;display:none;place-items:end center;text-align:center;padding:2rem 2rem 4rem;color:#aaa;font-size:.8rem}
+  .hero.nogl-on{background:#030207 url(bg-b.webp) center/cover no-repeat}
+
+  /* Phones, tablets and any portrait screen: the portrait is sized by the screen height and pinned near the top,
+     so your face keeps the same place on every device; the text floats over a dark scrim below it. */
+  @media (max-width:880px), (orientation:portrait) and (max-width:1180px){
+    .stage{right:auto;left:50%;translate:-50% 0;bottom:auto;top:calc(3.2rem + 1svh);height:min(80svh,150vw)}
+    .intro{min-height:auto;max-width:none;padding:calc(3.2rem + 1svh + min(80svh,150vw) * .58) 6vw 7.5rem}
+    .intro::before{content:"";position:absolute;left:0;right:0;bottom:0;top:calc(3.2rem + min(80svh,150vw) * .4);z-index:-1;pointer-events:none;
+      background:linear-gradient(180deg,rgba(3,2,7,0) 0%,rgba(3,2,7,.82) 22%,#030207 42%)}
+    .intro > .tag{margin-top:0}
+    h1{font-size:clamp(2.9rem,13vw,4.8rem)}
+    .hint{bottom:auto;top:calc(3.2rem + 1svh + min(80svh,150vw) * .5);letter-spacing:.18em}
+    .hud{display:none}
+    .controls{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;border-radius:999px;scrollbar-width:none;width:94vw}
+    .controls::-webkit-scrollbar{display:none}
+    .chip{flex:0 0 auto;padding:.4rem .6rem;font-size:.7rem}
+  }
+</style>
+<a class="back" href="./" id="back">← BACK</a>
+<section class="hero" id="hero">
+  <canvas id="gl"></canvas>
+  <div class="nogl" id="nogl">Your browser doesn't support WebGL2, so the aura can't render here.</div>
+
+  <div class="stage" id="stage">
+    <button class="hit" id="hit" type="button" aria-label="Hold to charge the aura, release to burst"></button>
+  </div>
+
+  <div class="intro">
+    <h1>JUSTIN<br/>TIMOTHY</h1>
+    <p class="tagline">Developer. I build things that hit.</p>
+    <div class="sheet" id="sheet" role="group" aria-label="Status">
+      <div class="sheet-t">Status</div>
+      <div class="sheet-rule"></div>
+      <dl class="sheet-rows">
+        <div><dt>Name</dt><dd>Justin Timothy</dd></div>
+        <div><dt>Class</dt><dd>Developer</dd></div>
+        <div><dt>Aura</dt><dd class="amber" id="auraPct">0%</dd></div>
+        <div><dt>Mana</dt><dd><span class="meter"></span></dd></div>
+      </dl>
+    </div>
+    <div class="btns">
+      <a class="btn primary" href="./#projects">VIEW MY WORK</a>
+      <a class="btn" href="./#contact">CONTACT</a>
+    </div>
+  </div>
+  <div class="hint" aria-hidden="true"><span class="fine">HOVER TO AWAKEN · HOLD TO CHARGE</span><span class="coarse">HOLD TO CHARGE · RELEASE</span></div>
+</section>
+
+<div class="hud" id="hud"></div>
+<div class="pills">
+  <button class="chip on" id="ink" type="button" aria-pressed="true">Ink on</button>
+  <button class="chip" id="snd" type="button" aria-pressed="false">Sound off</button>
+</div>
+
+<div class="controls">
+  <button class="chip on" data-theme="shadow" style="--c:#a855f7"><i></i>Shadow</button>
+  <button class="chip" data-theme="gold" style="--c:#fbbf24"><i></i>Golden</button>
+  <button class="chip" data-theme="crimson" style="--c:#ef4444"><i></i>Crimson</button>
+  <button class="chip" data-theme="frost" style="--c:#38bdf8"><i></i>Frost</button>
+  <span class="sep"></span>
+  <button class="chip" id="q">Quality: Auto</button>
+  <span class="sep"></span>
+  <label class="chip">📷 Photo<input type="file" accept="image/*" id="filePhoto"></label>
+  <label class="chip">🖼 4K BG<input type="file" accept="image/*" id="fileBg"></label>
+</div>
+
+<script src="sfx.js"></script>
+<script src="cursor.js"></script>
+<script>SwordCursor.init({ src: "cursor-violet-128.png", tip: [0, 0], size: 58, glow: "190,150,255" });</script>
+<script>
+(() => {
+/* =========================================================================
+   AURA AWAKENING — WebGL2 manhwa aura engine
+   Add ?dev to the URL for the theme, quality, upload buttons and the fps readout.
+   ========================================================================= */
+const PHOTO_URL = "me.webp";
+const BG_URL = "bg-b.webp";
+const DEPTH_URL = "bg-b-depth.webp";   // greyscale depth of BG (white = near), pre-baked offline with Depth Anything V2
+const DEV = /[?&]dev\b/.test(location.search);
+if (DEV) document.documentElement.classList.add('dev');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const THEMES = {
+  shadow : {css:'#a855f7', hot:'#f3e8ff', deep:[.07,.02,.14], aura:[.55,.2,1.0],  glow:[.92,.84,1.0], alt:[.22,.18,.95]},
+  gold   : {css:'#f59e0b', hot:'#fff7d6', deep:[.12,.06,.01], aura:[1.0,.6,.1],   glow:[1.0,.96,.8],  alt:[1.0,.3,.04]},
+  crimson: {css:'#ef4444', hot:'#ffe4e4', deep:[.13,.01,.03], aura:[1.0,.1,.14],  glow:[1.0,.86,.8],  alt:[.65,.0,.3]},
+  frost  : {css:'#38bdf8', hot:'#e0f7ff', deep:[.01,.05,.13], aura:[.18,.62,1.0], glow:[.86,.97,1.0], alt:[.12,.26,.95]},
+};
+let theme = THEMES.shadow;
+
+const $ = s => document.querySelector(s);
+const hero = $('#hero'), cv = $('#gl'), stage = $('#stage'), hit = $('#hit'), root = document.documentElement;
+SFX.uses(['sfx/explosion-yours.mp3', 'sfx/card-whoosh-b.mp3']);
+{ const b = $('#snd'); const lab = () => { b.textContent = SFX.enabled ? 'Sound on' : 'Sound off'; b.classList.toggle('on', SFX.enabled); b.setAttribute('aria-pressed', String(SFX.enabled)); };
+  lab(); b.onclick = () => { SFX.setEnabled(!SFX.enabled); lab(); if (SFX.enabled) SFX.click(); };
+  addEventListener('pointerdown', () => SFX.unlock(), { once: true }); }
+$('#back').addEventListener('click', e => { if (history.length > 1) { e.preventDefault(); history.back(); } });
+const gl = cv.getContext('webgl2', {antialias:false, alpha:false, premultipliedAlpha:false, powerPreference:'high-performance'});
+if (!gl) {
+  // no aura without WebGL2, but the page still works: a still background, the status sheet, sound
+  hero.classList.add('nogl-on'); $('#nogl').style.display = 'grid'; $('#sheet').style.visibility = 'visible'; $('#ink').hidden = true;
+  return;
+}
+const floatOK = !!gl.getExtension('EXT_color_buffer_float');
+
+/* ---------------- shaders ---------------- */
+const VS = `#version 300 es
+void main(){ vec2 p = vec2((gl_VertexID<<1)&2, gl_VertexID&2); gl_Position = vec4(p*2.-1., 0., 1.); }`;
+
+const COMMON = `#version 300 es
+precision highp float;
+out vec4 o;
+float hash(vec2 p){ p = fract(p*vec2(123.34,456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
+float noise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),u.x), mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x), u.y); }
+const mat2 MR = mat2(1.6,1.2,-1.2,1.6);
+float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<5;i++){ v+=a*noise(p); p=MR*p; a*=.5; } return v; }
+float fbm3(vec2 p){ float v=0., a=.5; for(int i=0;i<3;i++){ v+=a*noise(p); p=MR*p; a*=.5; } return v; }
+`;
+
+const SCENE = COMMON + `
+uniform vec2 R; uniform float T, P, BURST, SHOCK; uniform vec2 SHOCKPOS, M;
+uniform vec4 RECT; uniform sampler2D PT, BG, DEP; uniform float HASBG, HASDEP; uniform vec2 BGSIZE;
+uniform vec3 C_DEEP, C_AURA, C_HOT, C_ALT; uniform float INK;
+uniform vec4 EYES; uniform float GLOW;   // both pupils in portrait uv (xy, zw); how lit the eyes and rim are
+
+float A(vec2 u, float l){ return textureLod(PT, u, l).a; }
+
+void main(){
+  vec2 fc = gl_FragCoord.xy, uv = fc/R;
+  float S = RECT.z;
+  vec2 c  = RECT.xy + RECT.zw*vec2(.5,.47);
+  vec2 q  = (fc - c)/S;
+  float t = T, p = P;
+  float fx = 0.;   // where the drawn effects are, so ink mode leaves the background alone
+  float noInk = 0.; // the eye glow: ink mode would outline it in black, so it is kept out
+
+  /* shockwave */
+  vec2 sq = (fc - SHOCKPOS)/S; float sr = length(sq);
+  float wave = (SHOCK > 0. && SHOCK < 1.) ? exp(-pow((sr - SHOCK*2.4)*7., 2.)) * (1.-SHOCK) : 0.;
+  vec2 dist = normalize(sq + 1e-5) * wave * .05;
+  vec2 qd = q - dist;
+  vec2 uvp = (fc - RECT.xy)/RECT.zw - dist*S/RECT.zw;
+
+  /* ---------- background ---------- */
+  vec3 col;
+  if (HASBG > .5) {
+    /* 4K world reveal: dark + blurred while idle, your aura burns it open on hover */
+    float ra = R.x/R.y, ia = BGSIZE.x/BGSIZE.y;
+    float pc1 = min(p, 1.2);
+    vec2 bu = uv - dist*S/R;
+    vec2 sc = ra > ia ? vec2(1., ia/ra) : vec2(ra/ia, 1.);
+    vec2 fcuv = c/R;
+    bu = (bu - fcuv)*(1. - .035*pc1) + fcuv;                   // camera push-in toward you
+    bu = (bu - .5)*sc*.975 + .5;
+    // 2.5D parallax: near things (bright in the depth map) move more than far ones
+    float dz = HASDEP > .5 ? textureLod(DEP, bu, 1.).r : .4;
+    bu += ((M/R - .5) * -(.004 + .03*dz) + vec2(sin(t*.23), cos(t*.19)) * .0025 * dz) * sc;
+    vec3 sharp = textureLod(BG, bu, 0.).rgb;
+    vec3 blur  = textureLod(BG, bu, 4.5).rgb;
+    float lb = dot(blur, vec3(.299,.587,.114));
+    vec3 asleep = C_DEEP*.45 + vec3(lb)*.22;                   // dark, grey, blurry world
+    float ls = dot(sharp, vec3(.299,.587,.114));
+    vec3 awake = mix(sharp, sharp*sharp*1.5, .35) * .85;      // punchier contrast
+    awake += C_AURA*pow(ls, 2.)*.35 + C_HOT*pow(ls, 5.)*.3;   // aura tints the highlights
+    awake = mix(awake, awake*vec3(.85,.85,1.)*C_DEEP*6., .12);
+    // burning reveal front, spreading out from you
+    float rad = pc1*2.4 + BURST*1.2;
+    float dR = length(qd*vec2(1., .8)) + (fbm(qd*3. + vec2(0., -t*.6)) - .5)*.5;
+    float rv = 1. - smoothstep(rad - .3, rad, dR);
+    col = mix(asleep, awake, rv);
+    float front = smoothstep(.1, 0., abs(dR - rad + .05)) * step(.02, pc1) * step(dR, rad + .2);
+    col += (C_AURA*1.1 + C_HOT*.25) * front * (1. - smoothstep(1.8, 2.6, rad)*.6);
+    col *= mix(.5, 1., smoothstep(.05, .5, uv.x));             // keep the text side readable
+  } else {
+    float n  = fbm(qd*1.1 + vec2(t*.02, -t*.03));
+    float n2 = fbm(qd*2.4 - vec2(0., t*.05) + n*1.5);
+    col = C_DEEP*(.3 + 1.1*n2);
+    col = mix(col, C_ALT*.22, smoothstep(.55,.85,n)*.7);
+    // distant cel-shaded rock/ruin silhouettes on the horizon
+    float hz = fbm3(vec2(uv.x*4. + 1.3, 2.))*.22 + .08;
+    col = mix(col, C_DEEP*.12, smoothstep(hz+.004, hz, uv.y)*.9);
+  }
+  col *= .55 + .45*smoothstep(1.1, .0, abs(uv.y - .5)*2.);
+
+  /* ---------- core glow, god rays, light pillar ---------- */
+  float r = length(qd*vec2(1.,.8)), ang = atan(qd.y, qd.x);
+  col += C_AURA*exp(-r*2.4)*(.06 + .55*min(p,1.));
+  float rays = pow(noise(vec2(ang*9., t*.4)), 3.) * noise(vec2(ang*23., -t*.3)) * exp(-r*1.) * p * .8;
+  col += mix(C_AURA, C_HOT, .4)*rays;
+  col += C_AURA*exp(-abs(qd.x)*5.)*smoothstep(-.9, 1.4, qd.y)*.16*p;
+
+  /* ---------- magic seal behind you ---------- */
+  {
+    float vis = smoothstep(.15, .7, p);
+    vec2 sv = (qd - vec2(0., .1)) / (.62 + .1*min(p,1.) + .25*BURST);
+    float sr2 = length(sv), sa = atan(sv.y, sv.x);
+    float lw = .0045, seal = 0.;
+    seal += smoothstep(lw*1.6, 0., abs(sr2 - .64));
+    seal += smoothstep(lw, 0., abs(sr2 - .58));
+    float tk = fract((sa + t*.12)/6.2831*96.);
+    seal += step(tk, .3) * step(.585, sr2) * step(sr2, .635) * .6;
+    float rs = (sa - t*.07)/6.2831*22., rid = floor(rs), rf = fract(rs);
+    float cell = floor((sr2 - .44)/.022);
+    float glyph = step(.12, rf)*step(rf, .88)*step(.45, hash(vec2(rid, cell)));
+    seal += glyph * step(.44, sr2) * step(sr2, .53) * .55;
+    seal += smoothstep(lw, 0., abs(sr2 - .43)) + smoothstep(lw, 0., abs(sr2 - .54));
+    for (int k = 0; k < 2; k++) {
+      float rot = t*.05*(k==0?1.:-1.) + float(k)*1.0472;
+      float an = mod(sa + rot, 2.0944) - 1.0472;
+      float dp = sr2*cos(an) - .205;
+      seal += smoothstep(lw, 0., abs(dp)) * step(sr2, .42);
+    }
+    seal += smoothstep(lw, 0., abs(sr2 - .2));
+    col += (C_AURA*.9 + C_HOT*.2) * seal * vis * (.6 + .4*sin(t*2.2));
+    fx = max(fx, clamp(seal*vis, 0., 1.));
+  }
+
+  /* ---------- aura flames grown from your silhouette ---------- */
+  vec2 lean = clamp((M - c)/S, -1., 1.) * .05 * p;
+  vec2 fw = vec2(fbm(uvp*vec2(5., 2.4) + vec2(0., -t*1.6)), fbm(uvp*vec2(4., 2.) + vec2(7.3, -t*2.1)));
+  float up = .12 + .28*min(p,1.) + .12*BURST;
+  float F = A(uvp + vec2((fw.x - .5)*.10 - lean.x, -fw.y*up - lean.y*.5), 4.)
+          + A(uvp + vec2((fw.y - .5)*.24 - lean.x*1.6, -fw.x*up*1.8), 5.5)*.9;
+  float below = smoothstep(-.04, .12, uvp.y);                      // nothing grows below the portrait
+  float body1 = A(uvp, 1.5);
+  float Fc = clamp(clamp(F - body1*1.15, 0., 2.) * min(p, 1.) * 1.05, 0., 1.1) * below;   // hollow: strongest at your outline
+  Fc = mix(Fc, floor(Fc*5.)/5., .45);                       // manhwa cel banding
+  Fc = mix(Fc, floor(Fc*3. + .4)/3., INK);                  // ink mode: hard 3-step flames
+  fx = max(fx, smoothstep(.05, .3, Fc));
+  vec3 fcol = mix(C_ALT, C_AURA, smoothstep(.1, .5, Fc + fw.x*.2));
+  fcol = mix(fcol, C_HOT, smoothstep(.8, 1.3, Fc));
+  col += fcol * Fc * 1.25;
+
+  /* ---------- cel-shaded ink smoke with glowing rims ---------- */
+  float halo = (A(uvp, 6.5)*1.3 + A(uvp - vec2(0., .16), 7.)*1.1) * smoothstep(-.1, .15, uvp.y);
+  {
+    vec2 s2 = qd*1.8; float rise = t*.35;
+    float column = exp(-abs(qd.x)*1.5) * smoothstep(-1., .1, qd.y) * smoothstep(1.7, .3, qd.y);
+    float kS = (.55 + halo*.55) * (.35 + column*.95);
+    float th = mix(.74, .42, min(p, 1.));
+    float sm = 0.;
+    if (kS*.97 > th - .045) {            // fbm tops out at .96875, so below this nothing in this block can show
+      vec2 w = vec2(fbm(s2*1.2 + vec2(0., -rise)), fbm(s2*1.2 + vec2(3.1, -rise*1.3)));
+      sm = fbm(s2 + 2.2*w - vec2(0., rise*1.5));
+    }
+    float d = sm * kS;
+    float ink = smoothstep(th, th + .012, d);
+    float rim = smoothstep(th - .045, th, d) * (1. - ink);
+    float inner = smoothstep(th + .07, th + .082, d);
+    vec3 inkCol = mix(C_DEEP*.16, C_DEEP*.04, inner);
+    float keep = 1. - smoothstep(.15, .6, Fc);   // don't cover the flames hugging your outline
+    col = mix(col, inkCol, ink*.93*keep);
+    fx = max(fx, max(ink*keep*min(p*2., 1.), rim*keep));
+    col += (C_HOT*.6 + C_AURA*1.3) * rim * 1.3 * min(p,1.) * keep;
+    col += C_AURA * smoothstep(th + .065, th + .07, d) * (1. - inner) * .5 * p; // inner cel line
+  }
+
+  /* ---------- lightning ---------- */
+  for (int i = 0; i < 5; i++) {
+    float fi = float(i);
+    float sd = floor(t*6. + fi*2.2) + fi*17.;
+    float on = step(.6, hash(vec2(sd, fi))) * smoothstep(.35, .75, p) + BURST*step(fi, 2.);
+    if (on < .01) continue;
+    float a = hash(vec2(sd, 3.))*6.2831;
+    vec2 dir = vec2(cos(a), sin(a));
+    vec2 lq = qd - dir*(.16 + .1*hash(vec2(sd, 5.)));
+    float x = dot(lq, dir), y = dot(lq, vec2(-dir.y, dir.x));
+    float len = .3 + .5*hash(vec2(sd, 9.)) + BURST*.4;
+    float off = (fbm3(vec2(x*5., sd)) - .5)*.24*x + (noise(vec2(x*30., sd)) - .5)*.03;
+    float dd = abs(y - off) + .0015;
+    float m = step(0., x) * smoothstep(len, len*.5, x);
+    col += (C_HOT*.0022/dd + C_AURA*.011/dd) * m * min(on, 1.) * .65;
+  }
+
+  /* ---------- you ---------- */
+  vec4 pc = texture(PT, uvp);
+  float inside = step(0., uvp.x)*step(uvp.x, 1.)*step(0., uvp.y)*step(uvp.y, 1.);
+  float a = pc.a * smoothstep(0., .13, uvp.y) * inside;
+  vec3 pr = pc.rgb;
+  float lum = dot(pr, vec3(.3,.59,.11));
+  pr = mix(pr, vec3(lum), .2*p);
+  pr = pr*mix(1., .62, min(p,1.)) + C_DEEP*.1*p;
+  pr = mix(pr, pr*pr*1.7, .25);
+  float edge = clamp((pc.a - A(uvp, 3.5))*3.2, 0., 1.);
+  pr += (C_AURA*1.6 + C_HOT*.7) * edge * smoothstep(.04, .2, uvp.y) * p * 1.2;                       // rim light
+  float vein = 0.;
+  if (a > 0. && uvp.y < .6) { float vn = fbm(uvp*vec2(7., 9.) + vec2(0., -t*.08)); vein = 1. - smoothstep(0., .022, abs(vn - .5)); }
+  pr += C_AURA*1.6 * vein * smoothstep(.6, .25, uvp.y) * p*p * .45;      // energy veins on the body
+  col = mix(col, pr, a);
+  fx = max(fx, a);
+
+  /* ---------- awakening: the purple rim light swells and the eyes ignite as the charge builds ---------- */
+  if (GLOW > .001) {
+    float purple = smoothstep(.04, .2, pc.b - max(pc.r*.8, pc.g)) * a;         // the rim light already painted in the art
+    col += (C_AURA*1.5 + C_HOT*.4) * purple * GLOW * 1.3;
+    col += (C_AURA*1.4 + C_HOT*.8) * edge * smoothstep(.04, .2, uvp.y) * GLOW * 1.1;
+    vec2 k = vec2(6./7., 1.);
+    float fl = .9 + .1*sin(T*31.)*sin(T*17.);
+    for (int i = 0; i < 2; i++) {
+      vec2 e = (uvp - (i == 0 ? EYES.xy : EYES.zw)) * k;
+      float core = exp(-dot(e*vec2(1., 2.4), e*vec2(1., 2.4)) * 52000.);     // the pupil itself
+      float halo = exp(-dot(e*vec2(1., 1.6), e*vec2(1., 1.6)) * 2600.);
+      float streak = exp(-abs(e.y)*900.) * exp(-abs(e.x)*38.);               // thin horizontal flare
+      float g = (core*2.2 + halo*.55 + streak*.9) * GLOW * fl;
+      col += (C_HOT*1.2 + vec3(.25)) * core * GLOW * 2. + C_AURA * g;
+      noInk = max(noInk, smoothstep(.0, .25, (halo*.55 + streak*.9) * GLOW));
+    }
+  }
+
+  col += fcol * clamp(F*p*.6, 0., 1.) * smoothstep(.35, .0, uvp.y) * below * .35;                  // flames licking in front
+  col += C_AURA * exp(-abs(uvp.y - .02)*16.) * exp(-abs(qd.x)*2.2) * p * .5; // ground glow
+
+  /* ---------- embers ---------- */
+  float sp = 0.;
+  for (int L = 0; L < 3; L++) {
+    float fl = float(L), sc = 6. + fl*5.;
+    vec2 g = qd*sc; g.y -= t*(.6 + fl*.35)*(1. + p*1.8);
+    vec2 id = floor(g), f = fract(g) - .5;
+    vec2 h = vec2(hash(id + fl*13.), hash(id*1.7 + fl*7.));
+    vec2 pp = (h - .5)*.7 + vec2(sin(t*2. + h.x*6.)*.12, 0.);
+    float tw = .5 + .5*sin(t*5. + h.y*20.);
+    sp += smoothstep(.075 - fl*.018, 0., length(f - pp)) * step(.55, h.y) * tw;
+  }
+  col += mix(C_HOT, C_AURA, .35) * sp * (.2 + p*1.3) * exp(-length(qd)*.55);
+
+  /* ---------- shock ring + impact speed lines ---------- */
+  col += (C_HOT + C_AURA) * wave * .9;
+  float sl = step(.962, noise(vec2(ang*60., floor(t*24.)))) * smoothstep(.3, 1., r);
+  col = mix(col, C_HOT*1.6, sl * BURST * .85);
+
+  col = col / (1. + max(col - 1., 0.)*.6);   // soft highlight rolloff
+  o = vec4(max(col, 0.), fx * (1. - noInk));
+}`;
+
+const BRIGHT = COMMON + `
+uniform sampler2D SRC; uniform vec2 TEXEL; uniform float TH;
+void main(){
+  vec2 uv = gl_FragCoord.xy * TEXEL;   // TEXEL = 1/destination size
+  vec3 c = vec3(0.);
+  c += texture(SRC, uv + TEXEL*vec2(-.25,-.25)).rgb; c += texture(SRC, uv + TEXEL*vec2(.25,-.25)).rgb;
+  c += texture(SRC, uv + TEXEL*vec2(-.25,.25)).rgb;  c += texture(SRC, uv + TEXEL*vec2(.25,.25)).rgb;
+  c *= .25;
+  float l = max(c.r, max(c.g, c.b));
+  o = vec4(c * smoothstep(TH, TH + .5, l), 1.);
+}`;
+
+const BLUR = COMMON + `
+uniform sampler2D SRC; uniform vec2 TEXEL, DIR;
+void main(){
+  vec2 uv = gl_FragCoord.xy * TEXEL;
+  float w[5] = float[](.227027, .1945946, .1216216, .054054, .016216);
+  vec3 c = texture(SRC, uv).rgb * w[0];
+  for (int i = 1; i < 5; i++) {
+    vec2 o2 = DIR * TEXEL * float(i) * 2.;
+    c += texture(SRC, uv + o2).rgb * w[i] + texture(SRC, uv - o2).rgb * w[i];
+  }
+  o = vec4(c, 1.);
+}`;
+
+const COMPOSITE = COMMON + `
+uniform sampler2D SC, BL, BL2; uniform vec2 R; uniform float T, BURST, IMPACT; uniform vec3 C_AURA; uniform float INK;
+vec3 aces(vec3 x){ return clamp((x*(2.51*x + .03))/(x*(2.43*x + .59) + .14), 0., 1.); }
+void main(){
+  vec2 uv = gl_FragCoord.xy / R, dc = uv - .5;
+  float ca = .0015 + .012*BURST;
+  vec3 c = vec3(texture(SC, uv - dc*ca).r, texture(SC, uv).g, texture(SC, uv + dc*ca).b);
+  c += texture(BL, uv).rgb * .55 + texture(BL2, uv).rgb * .45;
+  c = aces(c * 1.05);
+  if (INK > 0.) {
+    // ink mode: hard tone steps, ink contours and screentone, only where the aura, seal and you are
+    vec2 tx = 1. / R;
+    vec3 LW = vec3(.3, .59, .11);
+    vec4 s00 = texture(SC, uv + tx*vec2(-1., -1.)), s10 = texture(SC, uv + tx*vec2(0., -1.)), s20 = texture(SC, uv + tx*vec2(1., -1.));
+    vec4 s01 = texture(SC, uv + tx*vec2(-1.,  0.)),                                         s21 = texture(SC, uv + tx*vec2(1.,  0.));
+    vec4 s02 = texture(SC, uv + tx*vec2(-1.,  1.)), s12 = texture(SC, uv + tx*vec2(0.,  1.)), s22 = texture(SC, uv + tx*vec2(1.,  1.));
+    #define LL(v) clamp(dot(v.rgb, LW), 0., 1.5)
+    float gx = (LL(s20) + 2.*LL(s21) + LL(s22)) - (LL(s00) + 2.*LL(s01) + LL(s02));
+    float gy = (LL(s02) + 2.*LL(s12) + LL(s22)) - (LL(s00) + 2.*LL(s10) + LL(s20));
+    float m = max(texture(SC, uv).a, max(max(max(s00.a, s20.a), max(s02.a, s22.a)), max(max(s10.a, s12.a), max(s01.a, s21.a))));
+    m = smoothstep(.05, .5, m);
+    float edge = smoothstep(.32, .75, length(vec2(gx, gy))) * m;
+    float lc = dot(c, LW);
+    float lq = floor(lc * 4. + .35) / 4.;
+    vec3 cq = c * (lq + .03) / (lc + .03);
+    float an = .785398;
+    vec2 g = mat2(cos(an), -sin(an), sin(an), cos(an)) * gl_FragCoord.xy / 5.;
+    float rad = .6 * sqrt(clamp((.8 - lc) / .6, 0., 1.)) * step(.12, lc);
+    float dotm = 1. - smoothstep(rad - .1, rad + .1, length(fract(g) - .5));
+    cq *= 1. - dotm * .5;
+    cq = mix(cq, vec3(.012, .006, .02), edge * .8);
+    c = mix(c, cq, INK * m);
+  }
+  float l = dot(c, vec3(.3,.59,.11));
+  vec3 imp = mix(vec3(.96,.94,.9), vec3(.02), smoothstep(.18, .24, l));   // inverted manga impact frame
+  imp = mix(imp, C_AURA*.9, smoothstep(.5, .9, l)*.0);
+  c = mix(c, imp, step(.5, IMPACT));
+  c *= 1. - .6*pow(length(dc*vec2(1.1, 1.)) * 1.25, 2.6);
+  c += (hash(gl_FragCoord.xy + fract(T)*100.) - .5) * .03;
+  o = vec4(c, 1.);
+}`;
+
+function compile(fs){
+  const p = gl.createProgram();
+  for (const [type, src] of [[gl.VERTEX_SHADER, VS], [gl.FRAGMENT_SHADER, fs]]) {
+    const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    gl.attachShader(p, s);
+  }
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const cache = {};
+  p.u = n => (n in cache) ? cache[n] : (cache[n] = gl.getUniformLocation(p, n));
+  return p;
+}
+const progScene = compile(SCENE), progBright = compile(BRIGHT), progBlur = compile(BLUR), progComp = compile(COMPOSITE);
+gl.bindVertexArray(gl.createVertexArray());
+
+/* ---------------- render targets ---------------- */
+function target(w, h){
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  if (floatOK) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+  else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  return {tex, fb, w, h, free(){ gl.deleteTexture(tex); gl.deleteFramebuffer(fb); }};
+}
+let RT = null;
+function buildTargets(w, h){
+  if (RT) Object.values(RT).forEach(t => t.free());
+  const q4 = [Math.max(1, w>>2), Math.max(1, h>>2)], q16 = [Math.max(1, w>>4), Math.max(1, h>>4)];
+  RT = { scene:target(w, h), a:target(...q4), b:target(...q4), c:target(...q16), d:target(...q16) };
+}
+
+/* ---------------- textures: portrait + background ---------------- */
+const TW = 1200, TH = 1400;            // padded portrait canvas (matches .stage aspect 6:7)
+const BOX = {x:200, y:380, w:800, h:1020};
+function makeTex(){ const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0])); return t; }
+const texPortrait = makeTex(), texBg = makeTex(), texDep = makeTex();
+// pupils of me.png (498,253) and (603,253), mapped through photoToCanvas into portrait uv. Change these if me.png changes
+const EYES = [.4591, .6451, .5546, .6451];
+let glow = 0, eyesLit = false, afterglow = 0;
+let hasBg = 0, hasDep = 0, bgSize = [1, 1];
+
+function upload(tex, source){
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+}
+
+function photoToCanvas(img){
+  // the waist-up portrait is drawn larger than the box so the face reads well; the waist runs off the bottom
+  const c = document.createElement('canvas'); c.width = TW; c.height = TH;
+  const g = c.getContext('2d');
+  const s = (BOX.h / img.height) * 1.55, w = img.width * s, h = img.height * s;
+  g.drawImage(img, (TW - w) / 2, 330 - img.height * .069 * s, w, h);
+  return c;
+}
+function loadImage(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+
+if (PHOTO_URL) loadImage(PHOTO_URL).then(i => upload(texPortrait, photoToCanvas(i))).catch(()=>{});
+async function setBg(src){
+  const img = await loadImage(src);
+  const max = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+  let source = img, w = img.width, h = img.height;
+  if (Math.max(w, h) > max) {
+    const s = max/Math.max(w, h), c = document.createElement('canvas');
+    c.width = w = Math.round(w*s); c.height = h = Math.round(h*s);
+    c.getContext('2d').drawImage(img, 0, 0, w, h); source = c;
+  }
+  upload(texBg, source); hasBg = 1; bgSize = [w, h];
+  
+}
+if (BG_URL) setBg(BG_URL).catch(()=>{});
+if (DEPTH_URL) loadImage(DEPTH_URL).then(i => { upload(texDep, i); hasDep = 1; }).catch(()=>{});
+
+$('#filePhoto').onchange = e => { const f = e.target.files[0]; if (f) loadImage(URL.createObjectURL(f)).then(i => upload(texPortrait, photoToCanvas(i))); };
+$('#fileBg').onchange = e => { const f = e.target.files[0]; if (f) { hasDep = 0; setBg(URL.createObjectURL(f)); } };   // the depth map only matches the default background
+
+/* ---------------- UI ---------------- */
+function setTheme(name){
+  theme = THEMES[name];
+  root.style.setProperty('--aura', theme.css); root.style.setProperty('--hot', theme.hot);
+  document.querySelectorAll('[data-theme]').forEach(b => b.classList.toggle('on', b.dataset.theme === name));
+}
+document.querySelectorAll('[data-theme]').forEach(b => b.onclick = () => setTheme(b.dataset.theme));
+let quality = 'auto';
+let ink = 1;
+/* status sheet: violet pixels gather into the sheet, then dissolve to reveal it; the title rule draws from the centre */
+function sheetIn(){
+  const el = $('#sheet'); if (!el) return; el.style.visibility = 'visible';
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cols = 12, rows = 9, grid = document.createElement('div'); grid.className = 'pix';
+  grid.style.gridTemplateColumns = `repeat(${cols},1fr)`; grid.style.gridTemplateRows = `repeat(${rows},1fr)`;
+  const kids = [...el.children]; kids.forEach(k => k.style.opacity = 0);
+  const bgSave = el.style.background; el.style.background = 'transparent'; el.style.boxShadow = 'none';
+  const cells = Array.from({ length: cols*rows }, () => grid.appendChild(document.createElement('i')));
+  el.appendChild(grid);
+  cells.forEach(c => c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 90, delay: Math.random()*260, fill: 'forwards' }));
+  setTimeout(() => {
+    el.style.background = bgSave; el.style.boxShadow = ''; kids.forEach(k => k.style.opacity = '');
+    el.querySelector('.sheet-rule').animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    cells.forEach(c => c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, delay: Math.random()*300, fill: 'forwards' }));
+    setTimeout(() => grid.remove(), 480);
+    sfxDing();
+  }, 380);
+}
+{ const f = new Image(), t0 = performance.now(); f.src = 'status-frame.webp';
+  const go = () => setTimeout(sheetIn, Math.max(0, 500 - (performance.now() - t0)));
+  (f.decode ? f.decode() : Promise.reject()).then(go, () => { f.onload = go; if (f.complete) go(); }); }
+// sounds (sfx.js): the old charge hum, Justin's explosion on release, the card whoosh when the sheet appears
+function sfxCharge(){ SFX.v1.chargeStart(); }
+function stopCharge(){ SFX.v1.chargeStop(); }
+function sfxBoom(k){ SFX.explosion(k); }
+function sfxDing(){ SFX.cardWhoosh(); }
+$('#ink').onclick = () => { ink = ink ? 0 : 1; $('#ink').textContent = ink ? 'Ink on' : 'Ink off'; $('#ink').classList.toggle('on', !!ink); $('#ink').setAttribute('aria-pressed', String(!!ink)); };
+$('#q').onclick = () => { quality = quality === 'auto' ? '4k' : 'auto'; $('#q').textContent = 'Quality: ' + (quality === 'auto' ? 'Auto' : '4K'); $('#q').classList.toggle('on', quality === '4k'); resize(true); };
+
+/* ---------------- interaction: hover / hold to charge / release ---------------- */
+let hovering = false, awakened = false, charging = false, charge = 0, released = false;
+let power = 0, burst = 0, shock = 0, shockPos = [0, 0], impactAt = -1, mouse = [0, 0];
+function pointerToBuffer(e){ const r = cv.getBoundingClientRect(); return [(e.clientX - r.left)*scale, (r.bottom - e.clientY)*scale]; }
+
+hit.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hovering = true; });
+hit.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hovering = false; });
+hit.addEventListener('pointerdown', e => { awakened = awakened || e.pointerType !== 'mouse'; charging = true; hit.setPointerCapture(e.pointerId); e.preventDefault(); sfxCharge(); });
+addEventListener('pointerup', e => { if (!charging) return; charging = false; release(e); });
+addEventListener('pointercancel', () => { charging = false; charge = 0; stopCharge(); });
+addEventListener('pointermove', e => { mouse = pointerToBuffer(e); });
+hit.addEventListener('focus', () => { hovering = true; });
+hit.addEventListener('blur', () => { hovering = false; if (charging) { charging = false; release(); } });
+hit.addEventListener('keydown', e => { if (e.key !== ' ' && e.key !== 'Enter') return; e.preventDefault(); if (!e.repeat && !charging) { charging = true; sfxCharge(); } });
+hit.addEventListener('keyup', e => { if (e.key !== ' ' && e.key !== 'Enter') return; e.preventDefault(); if (charging) { charging = false; release(); } });
+
+function release(e){
+  const strength = .45 + charge*.9;
+  released = true; afterglow = Math.max(afterglow, .5 + charge*.7);
+  burst = Math.min(1.2, strength); shock = .0001; impactAt = performance.now();
+  shockPos = figureCenter();
+  power = Math.min(power + .2 + charge*.35, 1.25);
+  charge = 0; SwordCursor.charge(0);
+  if (!reduce) { cv.classList.remove('shake'); void cv.offsetWidth; cv.classList.add('shake'); }
+  spawnBurst(strength);
+  sfxBoom(strength);
+  if (navigator.vibrate) try { navigator.vibrate(40 + strength*60); } catch(_){}
+}
+function spawnBurst(strength){
+  // manga focus lines bursting out from you (replaces the Korean sound-effect text)
+  const r = cv.getBoundingClientRect(), [bx, by] = figureCenter();
+  const el = document.createElement('div'); el.className = 'burst';
+  el.style.left = (bx/scale) + 'px'; el.style.top = (r.height - by/scale) + 'px';
+  el.style.setProperty('--s', (1 + strength*.45).toFixed(2));
+  $('#hero').appendChild(el); setTimeout(() => el.remove(), 750);
+}
+
+/* ---------------- sizing & adaptive resolution ---------------- */
+const MAX_SCALE = Math.min(devicePixelRatio || 1, 1.5), PIXEL_BUDGET = 3.7e6;
+let scale = 1, W = 0, H = 0, autoScale = MAX_SCALE;
+function resize(force){
+  const cssW = hero.clientWidth, cssH = hero.clientHeight;
+  const target = quality === '4k' ? 3840/Math.max(cssW, cssH) : Math.min(autoScale, Math.sqrt(PIXEL_BUDGET/Math.max(1, cssW*cssH)));
+  const w = Math.max(2, Math.round(cssW*target)), h = Math.max(2, Math.round(cssH*target));
+  if (!force && w === W && h === H) return;
+  scale = target; W = cv.width = w; H = cv.height = h; buildTargets(W, H);
+}
+addEventListener('resize', () => resize());
+let rectCache = null;
+addEventListener('resize', () => { rectCache = null; });
+function rectUniform(){
+  if (rectCache && rectCache.s === scale) return rectCache.v;
+  const r = stage.getBoundingClientRect(), c = cv.getBoundingClientRect();
+  rectCache = { s: scale, v: [(r.left - c.left)*scale, (c.bottom - r.bottom)*scale, r.width*scale, r.height*scale] };
+  return rectCache.v;
+}
+function figureCenter(){ const R = rectUniform(); return [R[0] + R[2]*.5, R[1] + R[3]*.47]; }
+
+/* ---------------- draw helpers ---------------- */
+function pass(prog, rt, setup){
+  gl.bindFramebuffer(gl.FRAMEBUFFER, rt ? rt.fb : null);
+  gl.viewport(0, 0, rt ? rt.w : W, rt ? rt.h : H);
+  gl.useProgram(prog); setup(prog); gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+function bindTex(prog, name, tex, unit){ gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.uniform1i(prog.u(name), unit); }
+
+/* ---------------- main loop ---------------- */
+let last = performance.now(), t0 = last, frames = 0, acc = 0, hudT = 0, bestAvg = 1, lastP = '', lastC = '';
+resize(true);
+function loop(now){
+  const raw = (now - last)/1000, dt = Math.min(.05, raw); last = now;
+  const t = (now - t0)/1000;
+
+  // state
+  if (charging) charge = Math.min(1, charge + dt/1.6);
+  // eyes and rim: rise with the charge, flare at the release, then settle to a faint glow once you have awakened
+  afterglow = Math.max(0, afterglow - dt/1.6);
+  const idle = released ? .16 + .04*Math.sin(t*2.2) : 0;
+  const want = charging ? .12 + .88*Math.pow(charge, 1.4) : Math.max(idle, afterglow);
+  glow += (want - glow)*(1 - Math.exp(-dt*(want > glow ? 10 : 3)));
+  if (charging && charge > .97 && !eyesLit) { eyesLit = true; SFX.maskLock(); }
+  if (!charging) eyesLit = false;
+  const tgt = charging ? .75 + charge*.65 : (hovering || awakened) ? .72 : .07;
+  power += (tgt - power)*(1 - Math.exp(-dt*(tgt > power ? 3.2 : 1.6)));
+  burst *= Math.exp(-dt*3.2);
+  if (shock > 0) { shock += dt/1.1; if (shock >= 1) shock = 0; }
+  const since = now - impactAt;
+  const impact = (!reduce && impactAt > 0 && (since < 70 || (since > 120 && since < 165))) ? 1 : 0;   // inverted frames: skipped for reduced motion
+  const vp = Math.min(power, 1).toFixed(2), vc = charge.toFixed(2);
+  if (vp !== lastP) root.style.setProperty('--p', lastP = vp);
+  if (vc !== lastC) root.style.setProperty('--charge', lastC = vc);
+  if (charging || charge > 0) SwordCursor.charge(charging ? charge : 0);
+
+  // adaptive resolution (Auto mode)
+  // (the first second holds shader compiles and uploads, so it is not measured; frame times are not clamped here)
+  if (t > 1) { frames++; acc += raw; }
+  if (quality === 'auto' && frames >= 40) {
+    const avg = acc/frames; frames = 0; acc = 0; bestAvg = Math.min(bestAvg, avg);
+    if (avg > .024 && autoScale > .45) { autoScale = Math.max(.45, autoScale*.82); resize(true); }
+    else if (avg < Math.min(.02, bestAvg*1.2) && autoScale < MAX_SCALE) { autoScale = Math.min(MAX_SCALE, autoScale*1.1); resize(true); }
+  }
+  if (now - hudT > 500) { hudT = now; if (DEV) $('#hud').textContent = `${W}×${H} · ${Math.round(1/Math.max(raw,.001))} fps`; $('#auraPct').textContent = Math.round(Math.max(0, Math.min(power,1.7))*100) + '%'; }
+
+  const rect = rectUniform(), th = theme;
+  pass(progScene, RT.scene, p => {
+    gl.uniform2f(p.u('R'), W, H); gl.uniform1f(p.u('T'), t); gl.uniform1f(p.u('P'), power);
+    gl.uniform1f(p.u('BURST'), burst); gl.uniform1f(p.u('SHOCK'), shock); gl.uniform2f(p.u('SHOCKPOS'), ...shockPos);
+    gl.uniform2f(p.u('M'), ...mouse); gl.uniform4f(p.u('RECT'), ...rect);
+    gl.uniform1f(p.u('HASBG'), hasBg); gl.uniform1f(p.u('HASDEP'), hasDep); bindTex(p, 'DEP', texDep, 2); gl.uniform4f(p.u('EYES'), ...EYES);
+    gl.uniform1f(p.u('GLOW'), Math.min(glow, 1.2)); gl.uniform2f(p.u('BGSIZE'), ...bgSize);
+    gl.uniform3f(p.u('C_DEEP'), ...th.deep); gl.uniform3f(p.u('C_AURA'), ...th.aura);
+    gl.uniform3f(p.u('C_HOT'), ...th.glow); gl.uniform3f(p.u('C_ALT'), ...th.alt);
+    bindTex(p, 'PT', texPortrait, 0); bindTex(p, 'BG', texBg, 1); gl.uniform1f(p.u('INK'), ink);
+  });
+  // bloom: 1/4 res + 1/16 res
+  pass(progBright, RT.a, p => { gl.uniform2f(p.u('TEXEL'), 1/RT.a.w, 1/RT.a.h); gl.uniform1f(p.u('TH'), .9); bindTex(p, 'SRC', RT.scene.tex, 0); });
+  pass(progBlur, RT.b, p => { gl.uniform2f(p.u('TEXEL'), 1/RT.b.w, 1/RT.b.h); gl.uniform2f(p.u('DIR'), 1, 0); bindTex(p, 'SRC', RT.a.tex, 0); });
+  pass(progBlur, RT.a, p => { gl.uniform2f(p.u('TEXEL'), 1/RT.a.w, 1/RT.a.h); gl.uniform2f(p.u('DIR'), 0, 1); bindTex(p, 'SRC', RT.b.tex, 0); });
+  pass(progBlur, RT.c, p => { gl.uniform2f(p.u('TEXEL'), 1/RT.c.w, 1/RT.c.h); gl.uniform2f(p.u('DIR'), 1, 0); bindTex(p, 'SRC', RT.a.tex, 0); });
+  pass(progBlur, RT.d, p => { gl.uniform2f(p.u('TEXEL'), 1/RT.d.w, 1/RT.d.h); gl.uniform2f(p.u('DIR'), 0, 1); bindTex(p, 'SRC', RT.c.tex, 0); });
+  pass(progComp, null, p => {
+    gl.uniform2f(p.u('R'), W, H); gl.uniform1f(p.u('T'), t); gl.uniform1f(p.u('BURST'), burst); gl.uniform1f(p.u('IMPACT'), impact); gl.uniform1f(p.u('INK'), ink);
+    gl.uniform3f(p.u('C_AURA'), ...th.aura);
+    bindTex(p, 'SC', RT.scene.tex, 0); bindTex(p, 'BL', RT.a.tex, 1); bindTex(p, 'BL2', RT.d.tex, 2);
+  });
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+if (DEV) window.__aura = { set(p){ power = p; }, release(){ charge = 1; release(); }, hover(v){ hovering = v; } };
+})();
+</script>

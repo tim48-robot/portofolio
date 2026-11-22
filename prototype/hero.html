@@ -1,0 +1,670 @@
+<title>Justin Timothy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&text=hit.built&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&text=hey%2C%20I%27m%20Justin%20%3A%29&display=swap">
+<style>
+/* Layout: paper page on a faint grid. The headline splits around one central screentone manhwa panel; a dock sits under it, then projects, then the footer. Single light "paper" look by choice. */
+:root{
+  --paper:#f3f2ee;
+  --paper-2:#e8e7e1;
+  --card:#fbfbf9;
+  --ink:#0e0e10;
+  --ink-2:#3c3c42;
+  --muted:#66666c;
+  --line:#d6d5cf;
+  --grid:rgba(14,14,16,.045);
+  --red:#e0262f;
+  --red-ink:#b81d25;
+  --f-sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --f-sfx:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --f-hand:"Gaegu","Comic Sans MS",cursive;
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--paper);scroll-behavior:smooth}
+body{margin:0;background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;color:var(--ink);font-family:var(--f-sans);font-size:16px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1240px;margin-inline:auto;padding-inline:24px}
+@media (max-width:600px){.wrap{padding-inline:16px}}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(243,242,238,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .3s}
+.top.scrolled{border-bottom-color:var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:60px}
+.logo{font-family:var(--f-hand);font-weight:700;font-size:23px;color:var(--red-ink);text-decoration:none;display:inline-block;transition:transform .5s var(--spring)}
+.logo:hover{transform:rotate(-4deg) scale(1.06)}
+.nav{display:flex;gap:4px;font-size:14px}
+.nav a{text-decoration:none;padding:8px 12px;border-radius:999px;transition:background .2s,transform .4s var(--spring)}
+.nav a:hover{background:var(--paper-2);transform:translateY(-1px)}
+.nav a:active{transform:scale(.94)}
+.snd{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .2s,border-color .2s}
+.snd::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.snd[aria-pressed="true"]{border-color:var(--ink)}
+.snd[aria-pressed="true"]::before{background:var(--red)}
+.snd:hover{background:var(--paper-2)}
+@media (max-width:600px){.nav a:not(.cv){display:none}}
+
+/* hero */
+.hero{padding-block:44px 28px;display:flex;flex-direction:column;align-items:center;gap:32px}
+.side.head{align-items:center;text-align:center}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.side.left{align-items:flex-end;text-align:right}
+.big{text-wrap:balance;font-size:clamp(36px,5.6vw,84px);line-height:.98;letter-spacing:-.035em;font-weight:500;margin:0}
+.label{font-family:var(--f-mono);font-size:13px;color:var(--muted);letter-spacing:.01em}
+.label b{color:var(--ink);font-weight:500}
+.ch{display:inline-block;animation:inkin .9s var(--ease) both}
+@keyframes inkin{from{opacity:0;filter:blur(10px);transform:translateY(10px)}to{opacity:1;filter:none;transform:none}}
+.sfx{position:relative;display:inline-block;font-family:var(--f-sfx);font-weight:400;color:var(--red);letter-spacing:-.01em;transform:rotate(-6deg) skewX(-6deg);text-shadow:4px 4px 0 var(--ink);-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill;animation:slam .55s var(--spring) 1s both}
+.sfx::before{content:"";position:absolute;inset:-60% -40%;z-index:-1;background:repeating-conic-gradient(from 0deg,var(--ink) 0 1.1deg,transparent 1.1deg 7deg);-webkit-mask:radial-gradient(closest-side,transparent 38%,#000 40%,transparent 72%);mask:radial-gradient(closest-side,transparent 38%,#000 40%,transparent 72%);opacity:.22;animation:burst .7s var(--ease) 1.05s both}
+@keyframes slam{0%{opacity:0;transform:rotate(-14deg) skewX(-6deg) scale(2.3)}60%{opacity:1}100%{opacity:1;transform:rotate(-6deg) skewX(-6deg) scale(1)}}
+@keyframes burst{from{opacity:.7;transform:scale(.4)}to{opacity:.22;transform:scale(1)}}
+
+.stage{display:flex;flex-direction:column;align-items:center;gap:12px;perspective:1100px}
+.panel{position:relative;width:clamp(250px,min(29vw,46vh),520px);aspect-ratio:3/4;border:3px solid var(--ink);background:var(--paper);box-shadow:10px 10px 0 var(--ink);cursor:pointer;transform-style:preserve-3d;transition:transform .7s var(--ease),box-shadow .7s var(--ease);padding:0;display:block;overflow:hidden}
+.panel.tilting{transition:transform .12s linear,box-shadow .2s}
+.panel:active{box-shadow:6px 6px 0 var(--ink)}
+.panel canvas{display:block;width:100%;height:100%}
+.panel .hint{position:absolute;left:10px;top:10px;font-family:var(--f-mono);font-size:11px;background:var(--ink);color:var(--paper);padding:4px 8px;opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .4s var(--spring)}
+.panel:hover .hint,.panel:focus-visible .hint{opacity:1;transform:none}
+.panel.drop{outline:3px dashed var(--red);outline-offset:6px}
+.fine-only{display:inline}.coarse-only{display:none}
+@media (pointer:coarse){.fine-only{display:none}.coarse-only{display:inline}}
+.under{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 14px}
+.mini{font-family:var(--f-mono);font-size:12px;color:var(--muted);background:none;border:1px solid var(--line);padding:5px 10px;border-radius:999px;cursor:pointer;transition:transform .4s var(--spring),border-color .2s,color .2s}
+.mini:hover{color:var(--ink);border-color:var(--ink);transform:translateY(-2px)}
+.mini:active{transform:scale(.95)}
+
+.hero{overflow-x:clip}
+@media (max-width:600px){.logo{font-size:19px;white-space:nowrap}.snd{padding:6px 10px;font-size:12px;white-space:nowrap}}
+@media (max-width:640px){
+  .hero{padding-block:32px 20px;gap:24px}
+  .panel{width:min(82vw,380px)}
+}
+
+/* dock */
+.dock-row{display:flex;justify-content:center;padding-block:18px 64px}
+.dock{display:flex;gap:6px;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 10px 30px rgba(14,14,16,.08),0 1px 0 rgba(255,255,255,.8) inset}
+.dock button{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:84px;padding:12px 10px 10px;border:0;background:none;border-radius:16px;cursor:pointer;font-size:13px;transition:transform .5s var(--spring),background .2s}
+.dock button svg{width:30px;height:30px;transition:transform .5s var(--spring)}
+.dock button:hover{background:var(--paper);transform:translateY(-6px)}
+.dock button:hover svg{transform:rotate(-8deg) scale(1.12)}
+.dock button:active{transform:translateY(-2px) scale(.93)}
+
+/* status card: the printed twin of the Awaken sheet. Same condensed face, same ruled title, same row order;
+   ink on paper, a screentone shadow, red only for the failed measurement. */
+.veil{position:fixed;inset:0;z-index:40;background:rgba(14,14,16,.28);opacity:0;pointer-events:none;transition:opacity .35s}
+.veil.open{opacity:1;pointer-events:auto}
+.status{position:fixed;z-index:41;left:50%;top:50%;width:min(500px,calc(100vw - 32px));translate:-50% -50%;opacity:0;pointer-events:none;transition:opacity .2s;
+  color:var(--ink);padding:46px 60px 42px;font-family:"Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;
+  background:url(status-frame-silver.webp) center/100% 100% no-repeat;filter:drop-shadow(0 16px 28px rgba(14,14,16,.22))}
+@media (max-width:480px){.status{padding:36px 40px 32px}}
+.status.open{opacity:1;pointer-events:auto;animation:stamp .4s cubic-bezier(.3,1.4,.5,1) both}
+.status.open .rule{animation:draw .45s var(--ease) .15s both}
+@keyframes stamp{0%{transform:scale(1.06);opacity:0}60%{transform:scale(.99);opacity:1}100%{transform:none}}
+@keyframes draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.status .t{font-weight:700;font-size:32px;letter-spacing:.06em;text-align:center;line-height:1;margin:0}
+.status .rule{height:3px;background:var(--ink);margin:12px -6px 16px;transform-origin:center}
+.status .x{position:absolute;top:28px;right:32px;width:40px;height:40px;border:0;background:none;cursor:pointer;font-size:0;color:var(--ink);border-radius:50%;transition:color .2s,transform .25s var(--spring)}
+.status .x::before,.status .x::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:2px;background:currentColor;border-radius:2px;transition:height .2s}
+.status .x::before{transform:translate(-50%,-50%) rotate(45deg)}
+.status .x::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.status .x:hover{color:var(--red)}
+.status .x:hover::before,.status .x:hover::after{height:3px}
+.status .x:active{transform:scale(.86)}
+.status .x:focus-visible{outline:2px solid var(--red);outline-offset:0}
+.status dl{margin:0;display:grid;gap:9px}
+.status .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-size:18px;letter-spacing:.04em}
+.status dt{font-weight:400;color:#4a4a50}
+.status dd{margin:0;font-weight:600;text-align:right}
+.status .unk{margin-top:16px;padding-top:12px;border-top:2px solid var(--ink);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));text-align:center}
+.status .unk small{display:block;font-size:13px;letter-spacing:.22em;color:#4a4a50}
+.status .unk strong{font-size:32px;font-weight:700;line-height:1.05}
+.status .fail{margin:12px 0 0;font-size:15px;letter-spacing:.08em;color:var(--red-ink);text-align:center}
+
+/* hold to awaken: cracks grow from your finger, then the panel shatters toward you */
+.cracks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.cracks path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.cracks .k{stroke:var(--ink);stroke-width:4}
+.cracks .w{stroke:#fff;stroke-width:1.4}
+.panel{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.shards{position:fixed;z-index:60;pointer-events:none;perspective:700px}
+.shard{position:absolute;inset:0;background-size:100% 100%;will-change:transform,opacity}
+.dark{position:fixed;inset:0;z-index:59;background:#07040d;opacity:0;pointer-events:none;transition:opacity .55s ease .25s}
+.dark.on{opacity:1}
+.impactfx{position:fixed;inset:0;z-index:61;pointer-events:none;-webkit-backdrop-filter:invert(1) contrast(1.4);backdrop-filter:invert(1) contrast(1.4)}
+
+/* sections */
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.sec-head h2{margin:0;font-size:clamp(34px,4vw,52px);letter-spacing:-.03em;font-weight:600;line-height:1}
+.sec-head h2 em{font-style:normal;font-family:var(--f-sfx);font-weight:400;color:var(--red);-webkit-text-stroke:1px var(--ink);paint-order:stroke fill;text-shadow:3px 3px 0 var(--ink);display:inline-block;transform:rotate(-4deg);margin-left:.15em}
+.projects{padding-block:40px 96px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+@media (max-width:760px){.cards{grid-template-columns:minmax(0,1fr)}}
+.card{display:flex;flex-direction:column;gap:14px;text-decoration:none;min-width:0}
+.art{position:relative;aspect-ratio:16/10;border:3px solid var(--ink);overflow:hidden;background:var(--paper);transition:transform .6s var(--spring),box-shadow .6s var(--spring);box-shadow:0 0 0 var(--ink)}
+.card:hover .art{transform:translate(-4px,-4px) rotate(-.6deg);box-shadow:8px 8px 0 var(--ink)}
+.art .bg{position:absolute;inset:0;transition:transform .9s var(--ease)}
+.card:hover .art .bg{transform:scale(1.06)}
+.bg.lines{background:radial-gradient(circle at 70% 38%,var(--red) 0 14%,transparent 14.5%),repeating-conic-gradient(from 0deg at 50% 50%,var(--ink) 0 .9deg,transparent .9deg 5deg),var(--paper)}
+.bg.tone{background:radial-gradient(circle,var(--ink) 1.6px,transparent 1.9px) 0 0/9px 9px,var(--paper);-webkit-mask:linear-gradient(115deg,#000 10%,rgba(0,0,0,.15) 70%);mask:linear-gradient(115deg,#000 10%,rgba(0,0,0,.15) 70%)}
+.bg.tone + .sun{position:absolute;right:-8%;top:-20%;width:62%;aspect-ratio:1;border-radius:50%;background:var(--red);opacity:.9}
+.shot{position:absolute;left:12%;right:12%;top:16%;bottom:-6%;background:var(--card);border:2px solid var(--ink);box-shadow:0 18px 40px rgba(14,14,16,.25);display:flex;flex-direction:column;transition:transform .7s var(--spring)}
+.card:hover .shot{transform:translateY(-8px)}
+.shot .bar{display:flex;gap:6px;padding:8px 10px;border-bottom:2px solid var(--ink)}
+.shot .bar i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink)}
+.logs{flex:1;display:flex;flex-direction:column;font-family:var(--f-mono);font-size:clamp(9px,1vw,11px);padding:6px 10px;gap:2px;overflow:hidden}
+.logs > div{display:grid;grid-template-columns:7.6em 1fr 3.5em;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);white-space:nowrap}
+.logs > div span{overflow:hidden;text-overflow:ellipsis}
+.logs .lh{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--ink)}
+.logs .w{color:var(--red);font-weight:600}
+.shot .ph{flex:1;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;color:var(--muted);padding:12px;text-align:center}
+.meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.meta h3{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.chip{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ink);padding:2px 8px;margin-left:8px;vertical-align:3px}
+.arrow{display:inline-block;transition:transform .5s var(--spring)}
+.card:hover .arrow{transform:rotate(45deg) scale(1.2)}
+.card p{margin:0;color:var(--ink-2);max-width:56ch}
+
+/* footer playground */
+.foot{position:relative;border-top:3px solid var(--ink);background:var(--paper-2);overflow:hidden}
+.foot .wrap{position:relative;z-index:2;padding-block:72px 28px;display:flex;flex-direction:column;gap:26px;pointer-events:none}
+.foot .wrap > *{pointer-events:auto}
+.foot h2{margin:0;font-size:clamp(46px,8.5vw,128px);line-height:.92;letter-spacing:-.045em;font-weight:600;pointer-events:none !important;max-width:12ch}
+.foot .row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;width:100%}
+.mail{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:16px}
+.mail button{cursor:pointer}
+.mail a{color:inherit;text-decoration:none;pointer-events:auto}
+.mail a:hover{text-decoration:underline;text-underline-offset:3px}
+.socials{display:flex;gap:12px}
+.socials a{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--paper);transition:transform .5s var(--spring),background .2s}
+.socials a:hover{transform:scale(1.2) rotate(10deg);background:var(--red)}
+.socials a:active{transform:scale(1.05)}
+.socials svg{width:22px;height:22px}
+.fine{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:var(--f-mono);font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;margin-top:22px}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:50;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-size:13px;padding:10px 16px;border-radius:999px;transition:transform .6s var(--spring),opacity .3s;pointer-events:none}
+.toast.show{transform:translate(-50%,0);opacity:1}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-delay:0s !important;transition-duration:.001ms !important}
+}
+</style>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="logo" href="#home">hey, I'm Justin :)</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#projects">Projects</a>
+      <a href="#about" data-open-status>About</a>
+      <a href="#contact">Contact</a>
+      <a class="cv" href="#resume">Résumé</a>
+      <button class="snd" id="snd" type="button" aria-pressed="false">Sound off</button>
+    </nav>
+  </div>
+</header>
+
+<main id="home">
+  <section class="wrap hero" aria-labelledby="h1">
+    <h1 class="sr" id="h1">Justin Timothy. I build things that hit.</h1>
+    <div class="side head" aria-hidden="true">
+      <span class="label">Justin Timothy</span>
+      <p class="big"><span data-split>I build things that </span><span class="sfx">hit.</span></p>
+      <span class="label">developer · <b>Jakarta</b> · currently <b>open to opportunities</b></span>
+    </div>
+
+    <div class="stage">
+      <button class="panel" id="panel" type="button" aria-label="Justin's portrait. Press for the status card, hold Space or Enter to awaken">
+        <canvas id="art" aria-hidden="true"></canvas>
+        <span class="hint">click: status · hold: awaken</span>
+        <svg class="cracks" id="cracks" aria-hidden="true"></svg>
+      </button>
+      <div class="under">
+        <span class="label"><span class="fine-only">click for status · hold to awaken</span><span class="coarse-only">tap for status · hold to awaken</span></span>
+        <a class="sr" href="awaken.html">Go to the Awaken page</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="dock-row">
+    <nav class="dock" aria-label="Sections">
+      <button type="button" data-go="projects">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="10" height="10" rx="2"></rect><rect x="18" y="4" width="10" height="10" rx="2" fill="#e0262f" stroke="#0e0e10"></rect><rect x="4" y="18" width="10" height="10" rx="2"></rect><rect x="18" y="18" width="10" height="10" rx="2"></rect></svg>
+        Projects
+      </button>
+      <button type="button" data-open-status>
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="3"></rect><circle cx="11" cy="15" r="3.5" fill="#e0262f" stroke="#0e0e10"></circle><path d="M6.5 22c1-2.5 2.6-3.5 4.5-3.5s3.5 1 4.5 3.5M19 13h6M19 17h6M19 21h4"></path></svg>
+        About
+      </button>
+      <button type="button" data-go="contact">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="7" width="26" height="18" rx="3"></rect><path d="M4 9l12 9 12-9"></path><circle cx="26" cy="8" r="4" fill="#e0262f" stroke="#0e0e10"></circle></svg>
+        Contact
+      </button>
+    </nav>
+  </div>
+
+  <section class="wrap projects" id="projects" aria-labelledby="proj-h">
+    <div class="sec-head">
+      <h2 id="proj-h">Things I've <em>built</em></h2>
+      <span class="label">2 projects · more soon</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://github.com/ruxailab/ruxailab-wiki/blob/main/GSoC2026-JustinTimothy.md" target="_blank" rel="noopener">
+        <div class="art"><div class="bg lines"></div><div class="shot"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="logs" aria-hidden="true">
+            <div class="lh"><span>Participant</span><span>Event</span><span>Level</span></div>
+            <div><span>P-001</span><span>CONSENT_ACCEPTED</span><span>info</span></div>
+            <div><span>P-002</span><span>TASK_STARTED</span><span>info</span></div>
+            <div><span>P-001</span><span>RECORDING_FAILED</span><span class="w">warn</span></div>
+            <div><span>P-003</span><span>STUDY_SUBMITTED</span><span>info</span></div>
+          </div></div></div>
+        <div class="meta"><h3>Study logging<span class="chip">GSoC 2026</span></h3><span class="arrow" aria-hidden="true">↗</span></div>
+        <p>Activity logging for RUXAILAB usability studies: a server-checked pipeline that never stores answers or personal data, and a Log Explorer for researchers. 12 PRs merged.</p>
+      </a>
+      <a class="card" href="#home">
+        <div class="art"><div class="bg tone"></div><div class="sun"></div><div class="shot"><div class="bar"><i></i><i></i><i></i></div><div class="ph">This hero effect, as its own little tool</div></div></div>
+        <div class="meta"><h3>Screentone<span class="chip">Canvas</span></h3><span class="arrow" aria-hidden="true">↗</span></div>
+        <p>Turns any image into a printed manhwa panel, ink dots and one spot colour, with your cursor revealing the original underneath.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot" id="contact" aria-labelledby="foot-h">
+  <div class="wrap">
+    <h2 id="foot-h">Let's build something.</h2>
+    <div class="row">
+      <div class="mail"><a id="email" href="mailto:justintimothy303@gmail.com">justintimothy303@gmail.com</a><button class="mini" type="button" id="copy">copy</button></div>
+      <div class="socials">
+        <a href="https://github.com/tim48-robot" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"></path></svg></a>
+        <a href="https://www.linkedin.com/in/justin-timothy-w-b6b28817b/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"></path><circle cx="4" cy="4" r="2"></circle></svg></a>
+        <a href="#resume" aria-label="Résumé"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M8 13h8M8 17h5"></path></svg></a>
+      </div>
+    </div>
+    <div class="fine"><span>© 2026 Justin Timothy</span><span>drawn in ink, built with too much manhwa</span></div>
+  </div>
+</footer>
+
+<div class="veil" id="veil"></div>
+<section class="status" id="status" role="dialog" aria-modal="true" aria-labelledby="status-h" hidden>
+  <button class="x" type="button" id="close" aria-label="Close status card">✕</button>
+  <h2 class="t" id="status-h">Status</h2>
+  <div class="rule"></div>
+  <dl>
+    <div class="row"><dt>Name</dt><dd>Justin Timothy</dd></div>
+    <div class="row"><dt>Role</dt><dd>Developer</dd></div>
+    <div class="row"><dt>Status</dt><dd>Open to opportunities</dd></div>
+  </dl>
+</section>
+<div class="dark" id="dark"></div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="sfx.js"></script>
+<script src="cursor.js"></script>
+<script>SwordCursor.init({ src: "cursor-red2-128.png", tip: [.016, .017], size: 60, glow: "215,38,46" });</script>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- headline letters ink in ---------- */
+  let delay = 0.15;
+  $$('[data-split]').forEach(el => {
+    const words = el.textContent.split(/(\s+)/);
+    el.textContent = '';
+    words.forEach(w => {
+      if (!w) return;
+      if (/^\s+$/.test(w)) { el.appendChild(document.createTextNode(' ')); return; }
+      const word = document.createElement('span');
+      word.style.whiteSpace = 'nowrap';
+      [...w].forEach(c => {
+        const s = document.createElement('span');
+        s.className = 'ch';
+        s.textContent = c;
+        s.style.animationDelay = `${delay.toFixed(2)}s`;
+        delay += 0.035;
+        word.appendChild(s);
+      });
+      el.appendChild(word);
+    });
+  });
+
+  /* ---------- toast ---------- */
+  const toastEl = $('#toast');
+  let toastT;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toastEl.classList.remove('show'), 2400);
+  }
+  try {
+    if (localStorage.getItem('jt-visited')) setTimeout(() => toast('Welcome back.'), 1600);
+    localStorage.setItem('jt-visited', '1');
+  } catch (e) {}
+
+  /* ---------- header border on scroll ---------- */
+  const top = $('#top');
+  addEventListener('scroll', () => top.classList.toggle('scrolled', scrollY > 8), { passive: true });
+
+  /* ---------- the panel: your portrait over the ink background, printed in screentone ---------- */
+  const ME = { img: null, bg: null };
+  // where the portrait sits in the panel: head near the top third, waist running off the bottom edge
+  function placeMe(w, h) { const ih = h * 1.184, iw = ih * ME.img.width / ME.img.height; return { x: (w - iw) / 2, y: h * .2796, iw, ih }; }
+  function drawScene(w, h) {
+    const c = cover(ME.bg, w, h), m = placeMe(w, h);
+    c.getContext('2d').drawImage(ME.img, m.x, m.y, m.iw, m.ih);
+    return c;
+  }
+  const panel = $('#panel'), cv = $('#art'), ctx = cv.getContext('2d');
+  let W = 0, H = 0, dpr = 1, color = null, tone = null, mask = null;
+  // keep the background as crisp ink and print only you in screentone
+  function cleanTone(w, h) {
+    const { x, y, iw, ih } = placeMe(w, h);
+    const fig = document.createElement('canvas'); fig.width = w; fig.height = h;
+    // willReadFrequently keeps this canvas on the CPU, so halftone()'s getImageData is a copy, not a slow GPU read-back
+    const fg = fig.getContext('2d', { willReadFrequently: true }); fg.fillStyle = '#f3f2ee'; fg.fillRect(0, 0, w, h); fg.drawImage(ME.img, x, y, iw, ih);
+    const dots = halftone(fig);
+    const mask = document.createElement('canvas'); mask.width = w; mask.height = h;
+    const mg = mask.getContext('2d'); mg.drawImage(dots, 0, 0); mg.globalCompositeOperation = 'destination-in'; mg.drawImage(ME.img, x, y, iw, ih);
+    const out = cover(ME.bg, w, h); out.getContext('2d').drawImage(mask, 0, 0);
+    return out;
+  }
+  function cover(img, w, h) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d');
+    const iw = img.width, ih = img.height, k = Math.max(w / iw, h / ih);
+    g.drawImage(img, (w - iw * k) / 2, (h - ih * k) / 2, iw * k, ih * k);
+    return c;
+  }
+  function halftone(src) {
+    const w = src.width, h = src.height;
+    const data = src.getContext('2d').getImageData(0, 0, w, h).data;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d');
+    g.fillStyle = '#f3f2ee'; g.fillRect(0, 0, w, h);
+    const cell = 5.2 * dpr, a = Math.PI / 4, ca = Math.cos(a), sa = Math.sin(a), cx = w / 2, cy = h / 2, D = Math.hypot(w, h) / 2 + cell;
+    const inkP = new Path2D(), redP = new Path2D();
+    for (let u = -D; u <= D; u += cell) for (let v = -D; v <= D; v += cell) {
+      const x = cx + u * ca - v * sa, y = cy + u * sa + v * ca;
+      if (x < -cell || y < -cell || x > w + cell || y > h + cell) continue;
+      const px = Math.min(w - 1, Math.max(0, x | 0)), py = Math.min(h - 1, Math.max(0, y | 0)), i = (py * w + px) * 4;
+      const r = data[i], gg = data[i + 1], b = data[i + 2];
+      const lum = (0.299 * r + 0.587 * gg + 0.114 * b) / 255;
+      const warm = (r - b) / 255;
+      const l = Math.pow(lum, 0.6);
+      if (warm > 0.3 && lum > 0.35) { const rr = cell * 0.58 * Math.sqrt(Math.min(1, (warm - 0.3) / 0.5)); if (rr > .4) { redP.moveTo(x + rr, y); redP.arc(x, y, rr, 0, Math.PI * 2); } }
+      const rad = l > 0.93 ? 0 : cell * 0.72 * Math.sqrt(1 - l);
+      if (rad > 0.35) { inkP.moveTo(x + rad, y); inkP.arc(x, y, rad, 0, Math.PI * 2); }
+    }
+    g.fillStyle = '#e0262f'; g.fill(redP);
+    g.fillStyle = '#0e0e10'; g.fill(inkP);
+    return c;
+  }
+  // built once both images are in, and again only when the panel really changes size
+  function build(force) {
+    if (!ME.img || !ME.bg) return;
+    const r = cv.getBoundingClientRect();
+    if (!r.width) return;
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+    if (!force && w === W && h === H && tone) return;
+    W = w; H = h; cv.width = W; cv.height = H;
+    color = drawScene(W, H);
+    tone = cleanTone(W, H);
+    mask = document.createElement('canvas'); mask.width = W; mask.height = H;
+    draw();
+  }
+
+  // reveal lens: follows the cursor, drifts on its own when nobody is pointing
+  let lx = 0.5, ly = 0.3, tx = 0.5, ty = 0.3, rad = 0.26, trad = 0.26, pointing = false, t0 = performance.now();
+  function draw() {
+    if (!tone) return;
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(tone, 0, 0);
+    const m = mask.getContext('2d'), R = rad * W, x = lx * W, y = ly * H;
+    m.globalCompositeOperation = 'source-over';
+    m.clearRect(0, 0, W, H);
+    m.drawImage(color, 0, 0);
+    m.globalCompositeOperation = 'destination-in';
+    const gr = m.createRadialGradient(x, y, R * .55, x, y, R);
+    gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    m.fillStyle = gr; m.fillRect(0, 0, W, H);
+    ctx.drawImage(mask, 0, 0);
+  }
+  let visible = true, raf = 0;
+  function loop(now) {
+    raf = 0;
+    if (!pointing) {
+      const t = (now - t0) / 1000;
+      tx = 0.5 + Math.sin(t * .5) * .26; ty = 0.55 + Math.sin(t * .37 + 1) * .22;
+    }
+    lx += (tx - lx) * .12; ly += (ty - ly) * .12; rad += (trad - rad) * .1;
+    draw();
+    if (visible && !reduce) raf = requestAnimationFrame(loop);
+  }
+  function kick() { if (!raf && visible && !reduce) raf = requestAnimationFrame(loop); }
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick(); }).observe(panel);
+  let rzT = 0;
+  new ResizeObserver(() => { clearTimeout(rzT); rzT = setTimeout(build, 120); }).observe(cv);
+  { const i = new Image(); i.onload = () => { ME.img = i; build(true); }; i.src = 'me-hero.webp'; }
+  { const i = new Image(); i.onload = () => { ME.bg = i; build(true); }; i.src = 'bg/panel-2.webp'; }
+  { const f = new Image(); f.src = 'status-frame-silver.webp'; f.decode && f.decode().catch(() => {}); }
+
+  panel.addEventListener('pointermove', e => {
+    const r = panel.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+    pointing = true; tx = px; ty = py; trad = 0.3;
+    if (reduce) { lx = px; ly = py; rad = trad; draw(); return; }   // no animation loop: the lens just sits under the pointer
+    if (!holding) {
+      panel.classList.add('tilting');
+      panel.style.transform = `rotateY(${(px - .5) * 14}deg) rotateX(${(.5 - py) * 10}deg)`;
+      panel.style.boxShadow = `${10 - (px - .5) * 14}px ${10 + (py - .5) * 10}px 0 var(--ink)`;
+    }
+    kick();
+  });
+  panel.addEventListener('pointerleave', () => {
+    pointing = false; trad = 0.26; t0 = performance.now() - 3000;
+    panel.classList.remove('tilting'); panel.style.transform = ''; panel.style.boxShadow = '';
+  });
+
+  /* ---------- status card ---------- */
+  const status = $('#status'), veil = $('#veil');
+  let lastFocus = null;
+  function openStatus(e) {
+    if (e) e.preventDefault();
+    lastFocus = document.activeElement;
+    status.hidden = false;
+    $$('header, main, footer').forEach(el => { el.inert = true; });
+    requestAnimationFrame(() => { status.classList.add('open'); veil.classList.add('open'); $('#close').focus({ preventScroll: true }); });
+    SFX.cardWhoosh();
+  }
+  function closeStatus() {
+    if (status.hidden) return;
+    $$('header, main, footer').forEach(el => { el.inert = false; });
+    status.classList.remove('open'); veil.classList.remove('open');
+    setTimeout(() => { if (!status.classList.contains('open')) status.hidden = true; }, 450);
+    if (lastFocus) lastFocus.focus({ preventScroll: true });
+  }
+  panel.addEventListener('click', e => { if (held) { held = false; return; } openStatus(e); });
+  panel.addEventListener('contextmenu', e => e.preventDefault());
+
+  /* ---------- hold to awaken ---------- */
+  const AWAKEN_URL = 'awaken.html';
+  const cracksEl = $('#cracks');
+  let shotUrl = '';
+  let lastCrack = 0, holdT0 = 0, holdRaf = 0, held = false, holding = false, gone = false, px0 = .5, py0 = .5;
+  function buildCracks(px, py) {
+    const r = panel.getBoundingClientRect(), w = r.width, h = r.height, x0 = px * w, y0 = py * h;
+    cracksEl.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    let d = '';
+    const n = 9;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + Math.random() * .5;
+      let x = x0, y = y0, len = Math.max(w, h) * (.35 + Math.random() * .4);
+      d += `M${x.toFixed(1)} ${y.toFixed(1)}`;
+      const steps = 6;
+      for (let k = 1; k <= steps; k++) {
+        const t = k / steps, aa = a + (Math.random() - .5) * .5;
+        x = x0 + Math.cos(aa) * len * t; y = y0 + Math.sin(aa) * len * t;
+        d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+        if (k === 3 && Math.random() > .4) { const b = aa + (Math.random() > .5 ? .7 : -.7); d += ` M${x.toFixed(1)} ${y.toFixed(1)} L${(x + Math.cos(b) * len * .25).toFixed(1)} ${(y + Math.sin(b) * len * .25).toFixed(1)} M${x.toFixed(1)} ${y.toFixed(1)}`; }
+      }
+    }
+    // a small ring of chips around the impact point
+    const ring = Math.min(w, h) * .07;
+    d += ` M${(x0 + ring).toFixed(1)} ${y0.toFixed(1)}`;
+    for (let k = 1; k <= 8; k++) { const a = k / 8 * Math.PI * 2, rr = ring * (.75 + Math.random() * .5); d += ` L${(x0 + Math.cos(a) * rr).toFixed(1)} ${(y0 + Math.sin(a) * rr).toFixed(1)}`; }
+    cracksEl.innerHTML = `<path class="k" pathLength="1" d="${d}"/><path class="w" pathLength="1" d="${d}"/>`;
+    setCrack(0);
+  }
+  function setCrack(f) { $$('path', cracksEl).forEach(p => { p.style.strokeDasharray = '1 1'; p.style.strokeDashoffset = String(1 - f); }); }
+  function holdLoop(now) {
+    const f = Math.min(1, Math.max(0, (now - holdT0 - 200) / 1100));
+    if (f > 0 && !held) held = true;
+    if (f > .4) prepareShot();
+    setCrack(f); SwordCursor.charge(f);
+    if (f > 0 && now - lastCrack > 230 - f * 170) { lastCrack = now; SFX.crack(f); }
+    if (!reduce && f > 0) {
+      const j = f * 4;
+      panel.classList.add('tilting');
+      panel.style.transform = `translate(${((Math.random() - .5) * j).toFixed(1)}px, ${((Math.random() - .5) * j).toFixed(1)}px) scale(${1 - f * .02})`;
+    }
+    if (f >= 1) { holding = false; shatter(); return; }
+    holdRaf = requestAnimationFrame(holdLoop);
+  }
+  let prefetched = false;
+  function prefetchAwaken() {
+    if (prefetched) return; prefetched = true;
+    ['awaken.html', 'me.webp', 'bg-b.webp', 'bg-b-depth.webp', 'status-frame.webp', 'cursor-violet-128.png', 'cursor.js', 'sfx.js'].forEach(href => {
+      const l = document.createElement('link'); l.rel = 'prefetch'; l.href = href; document.head.appendChild(l);
+    });
+  }
+  function startHold(px, py) {
+    if (gone || holding) return;
+    px0 = px; py0 = py;
+    buildCracks(px0, py0);
+    holding = true; held = false; holdT0 = performance.now();
+    SFX.preload('sfx/shatter-yours.mp3'); prefetchAwaken();
+    holdRaf = requestAnimationFrame(holdLoop);
+  }
+  panel.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    const r = panel.getBoundingClientRect();
+    startHold((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+  });
+  // keyboard: a short press opens the status card, holding Space or Enter cracks the panel like a held click
+  panel.addEventListener('keydown', e => {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    e.preventDefault();
+    if (!e.repeat) startHold(.5, .45);
+  });
+  panel.addEventListener('keyup', e => {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    e.preventDefault();
+    const wasHeld = held; cancelHold(); held = false;
+    if (!wasHeld && !gone) openStatus();
+  });
+  function cancelHold() {
+    if (!holding) return;
+    holding = false; cancelAnimationFrame(holdRaf);
+    setCrack(0); SwordCursor.charge(0); panel.style.transform = ''; panel.classList.remove('tilting');
+    if (shotUrl) { URL.revokeObjectURL(shotUrl); shotUrl = ''; }
+  }
+  addEventListener('pointerup', cancelHold);
+  addEventListener('pointercancel', () => { cancelHold(); held = false; });
+
+  // grab the panel image while the cracks grow, so the shatter starts instantly
+  function prepareShot() {
+    if (shotUrl) return;
+    try { cv.toBlob(b => { if (b) shotUrl = URL.createObjectURL(b); }, 'image/jpeg', .85); } catch (e) {}
+  }
+  function shatter() {
+    gone = true; cancelAnimationFrame(holdRaf);
+    SFX.play('sfx/shatter-yours.mp3', { vol: .95 });
+    const r = panel.getBoundingClientRect();
+    const dark = $('#dark');
+    if (reduce) { dark.classList.add('on'); setTimeout(() => { location.href = AWAKEN_URL; }, 600); return; }
+    let shot = shotUrl;
+    const box = document.createElement('div');
+    box.className = 'shards';
+    Object.assign(box.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+    // jittered grid -> triangles
+    const cols = 4, rows = 6, pts = [];
+    for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
+      const edgeX = i === 0 || i === cols, edgeY = j === 0 || j === rows;
+      pts.push([i / cols + (edgeX ? 0 : (Math.random() - .5) * .1), j / rows + (edgeY ? 0 : (Math.random() - .5) * .08)]);
+    }
+    const tris = [];
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const a = pts[j * (cols + 1) + i], b = pts[j * (cols + 1) + i + 1], c = pts[(j + 1) * (cols + 1) + i], d = pts[(j + 1) * (cols + 1) + i + 1];
+      if ((i + j) % 2) { tris.push([a, b, d], [a, d, c]); } else { tris.push([a, b, c], [b, d, c]); }
+    }
+    tris.forEach(t => {
+      const el = document.createElement('div');
+      el.className = 'shard';
+      el.style.clipPath = `polygon(${t.map(p => `${(p[0] * 100).toFixed(2)}% ${(p[1] * 100).toFixed(2)}%`).join(',')})`;
+      el.style.backgroundImage = shot ? `url(${shot})` : 'none';
+      if (!shot) el.style.background = 'var(--ink)';
+      const cx = (t[0][0] + t[1][0] + t[2][0]) / 3, cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
+      el.style.transformOrigin = `${(cx * 100).toFixed(1)}% ${(cy * 100).toFixed(1)}%`;
+      const dx = cx - px0, dy = cy - py0, dist = Math.hypot(dx, dy) || .01;
+      const push = 1.2 + Math.random() * 1.6;
+      const tx = dx / dist * r.width * push * (.6 + dist), ty = dy / dist * r.height * push * (.5 + dist) + r.height * .25;
+      const tz = 300 + Math.random() * 600, rx = (Math.random() - .5) * 220, ry = (Math.random() - .5) * 220, rz = (Math.random() - .5) * 120;
+      el.animate([
+        { transform: 'none', opacity: 1 },
+        { transform: `translate3d(${tx.toFixed(0)}px, ${ty.toFixed(0)}px, ${tz.toFixed(0)}px) rotateX(${rx.toFixed(0)}deg) rotateY(${ry.toFixed(0)}deg) rotateZ(${rz.toFixed(0)}deg)`, opacity: 0 }
+      ], { duration: 950 + Math.random() * 250, delay: dist * 140, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+      box.appendChild(el);
+    });
+    document.body.appendChild(box);
+    panel.style.visibility = 'hidden';
+    const fx = document.createElement('div'); fx.className = 'impactfx'; document.body.appendChild(fx);
+    setTimeout(() => fx.remove(), 90);
+    dark.classList.add('on');
+    setTimeout(() => { location.href = AWAKEN_URL; }, 1150);
+  }
+  // coming back from Awaken with the back button: restore the panel
+  addEventListener('pageshow', e => { SwordCursor.charge(0);
+    if (!e.persisted) return;
+    gone = false; held = false; panel.style.visibility = ''; panel.style.transform = ''; setCrack(0);
+    $('#dark').classList.remove('on'); $$('.shards').forEach(b => b.remove());
+  });
+  $$('[data-open-status]').forEach(b => b.addEventListener('click', openStatus));
+  $('#close').addEventListener('click', closeStatus);
+  veil.addEventListener('click', closeStatus);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !status.hidden) closeStatus(); });
+
+  /* ---------- sound ---------- */
+  const snd = $('#snd');
+  const sndLabel = () => { snd.textContent = SFX.enabled ? 'Sound on' : 'Sound off'; snd.setAttribute('aria-pressed', String(SFX.enabled)); };
+  sndLabel();
+  snd.addEventListener('click', () => { SFX.setEnabled(!SFX.enabled); sndLabel(); SFX.click(); });
+  SFX.uses(['sfx/card-whoosh-b.mp3', 'sfx/shatter-yours.mp3']);
+  addEventListener('pointerdown', () => SFX.unlock(), { once: true });
+  $$('.dock button, .nav a').forEach(b => b.addEventListener('click', () => SFX.click()));
+
+  /* ---------- dock ---------- */
+  $$('[data-go]').forEach(b => b.addEventListener('click', () => $('#' + b.dataset.go).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' })));
+
+  /* ---------- copy email ---------- */
+  $('#copy').addEventListener('click', () => {
+    const text = $('#email').textContent;
+    const done = () => toast('Email copied.');
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($('#email')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected. Press Ctrl+C.'); };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+
+})();
+</script>

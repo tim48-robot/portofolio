@@ -1,0 +1,930 @@
+<title>I Was Just an NPC, but the System Can't Read My Stats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Chakra+Petch:wght@400;500;600;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&display=swap">
+<style>
+/* Layout: one narrow webtoon strip of stacked panels, framed by a series-page cover above and a planning kit below. Single dark theme by choice. */
+:root{
+  --ink:#080c16;
+  --panel:#0e1524;
+  --panel-2:#141d31;
+  --line:#25314b;
+  --text:#e3e9f5;
+  --muted:#8994ad;
+  --system:#62c9ff;
+  --system-soft:rgba(98,201,255,.12);
+  --system-glow:rgba(98,201,255,.45);
+  --fail:#ff5a76;
+  --quest:#f1c25b;
+  --quest-soft:rgba(241,194,91,.12);
+  --paper:#f4f6fb;
+  --paper-ink:#0b0f1a;
+  --crowd-front:#2b3758;
+  --crowd-back:#1a2338;
+  --city:#0f1729;
+  --fur:#f2e8d9;
+  --fur-light:#fffaf1;
+  --cat-ink:#141a28;
+  --blush:#f3a1b5;
+  --f-display:"Black Han Sans","Arial Black",Impact,sans-serif;
+  --f-system:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --f-narr:"Nanum Myeongjo",Georgia,"Times New Roman",serif;
+  --f-talk:"Gowun Dodum","Trebuchet MS",system-ui,sans-serif;
+  --strip:680px;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--ink)}
+body{background:var(--ink);color:var(--text);font-family:var(--f-narr);font-size:16px;line-height:1.6;margin:0}
+.wrap{padding-inline:16px;padding-block:20px 150px;max-width:1040px;margin-inline:auto;display:flex;flex-direction:column;gap:56px}
+a{color:var(--system)}
+:focus-visible{outline:2px solid var(--system);outline-offset:3px}
+h1,h2,h3{text-wrap:balance}
+
+/* top bar */
+.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;font-family:var(--f-system);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:12px}
+.topbar b{color:var(--system);font-weight:600}
+
+/* cover */
+.cover{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:720px){.cover{grid-template-columns:minmax(0,1fr)}}
+.cover-art{position:relative;width:100%;max-width:340px;aspect-ratio:3/4;border:1px solid var(--line);background:linear-gradient(180deg,#18223a 0%,var(--ink) 100%);overflow:hidden;border-radius:3px}
+.cover-art svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:auto}
+.cover-art .stamp{position:absolute;top:14px;left:14px;font-family:var(--f-system);font-size:11px;letter-spacing:.14em;color:var(--system);border:1px solid var(--system);padding:2px 8px;background:var(--system-soft)}
+.cover-art .cover-title{position:absolute;left:14px;right:14px;top:46px;margin:0;font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.05;color:var(--text);text-shadow:0 2px 0 #000}
+.cover-art .cover-title span{color:var(--system)}
+.info{display:flex;flex-direction:column;gap:16px;min-width:0}
+.eyebrow{font-family:var(--f-system);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.series-title{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,5vw,48px);line-height:1.06;margin:0}
+.series-title em{font-style:normal;color:var(--system)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+.tags li{font-family:var(--f-system);font-size:13px;border:1px solid var(--line);padding:3px 10px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 20px;font-family:var(--f-system);font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.meta b{color:var(--text);font-weight:600}
+.synopsis{max-width:60ch;margin:0;font-size:17px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-system);font-weight:600;font-size:15px;letter-spacing:.04em;padding:12px 20px;border:1px solid var(--system);background:var(--system-soft);color:var(--system);text-decoration:none;cursor:pointer;border-radius:2px;width:fit-content}
+.btn:hover{background:rgba(98,201,255,.22)}
+
+/* strip */
+.strip{width:100%;max-width:var(--strip);margin-inline:auto;display:flex;flex-direction:column;gap:26px}
+.ep-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.ep-head h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:26px}
+.ep-head span{font-family:var(--f-system);font-size:12px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.panel{position:relative;background:var(--panel);border:2px solid #000;overflow:hidden}
+.narr{font-family:var(--f-narr);font-weight:700;background:var(--paper);color:var(--paper-ink);padding:10px 16px;border:2px solid #000;width:fit-content;max-width:85%;font-size:17px;line-height:1.45}
+.beat{display:flex;justify-content:center;padding-block:18px}
+.note{font-family:var(--f-system);font-size:13px;color:var(--muted);border:1px dashed var(--line);padding:10px 14px;line-height:1.5;margin-top:-12px}
+.note b{color:var(--quest);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;margin-right:6px}
+
+/* system window */
+.sys{position:relative;font-family:var(--f-system);color:var(--text);background:linear-gradient(180deg,rgba(20,40,70,.94),rgba(10,20,38,.96));border:1px solid var(--system);box-shadow:0 0 0 1px rgba(98,201,255,.15),0 0 24px var(--system-glow),inset 0 0 28px rgba(98,201,255,.12);padding:12px 16px}
+
+/* crowd */
+.crowd svg{display:block;width:100%;height:auto}
+.crowd .narr{position:absolute;top:14px;left:14px}
+.fig{transition:opacity .4s}
+.fig .body{fill:var(--crowd-front);transition:fill .4s}
+.fig.back .body{fill:var(--crowd-back)}
+.tag rect{fill:rgba(8,12,22,.88);stroke:var(--line)}
+.tag text{font-family:var(--f-system);font-size:12px;fill:#b7c3dc}
+.fig.mc .tag rect{stroke:var(--system)}
+.fig.mc .tag text{fill:var(--system)}
+.fig.npc .tag text{fill:var(--muted)}
+.city{fill:var(--city)}
+.npc-hit{fill:transparent;cursor:pointer}
+.npc-hit:focus{outline:none}
+.npc-hit:focus-visible{stroke:var(--system);stroke-dasharray:4 3}
+.crowd.looking .fig:not(.npc){opacity:.22}
+.crowd.looking .fig.npc .body{fill:#3b4c75;stroke:var(--system);stroke-width:1.5;filter:drop-shadow(0 0 6px var(--system-glow))}
+.crowd.looking .fig.npc .tag rect{stroke:var(--system)}
+.crowd.looking .fig.npc .tag text{fill:var(--system)}
+.hint{position:absolute;right:10px;bottom:10px;font-family:var(--f-system);font-size:12px;color:var(--muted);background:rgba(8,12,22,.78);padding:3px 8px;transition:opacity .3s}
+.crowd.looking .hint{opacity:0}
+.sys-pop{position:absolute;left:50%;bottom:14px;width:max-content;max-width:calc(100% - 24px);text-align:center;font-size:15px;transform:translate(-50%,8px);opacity:0;transition:opacity .35s,transform .35s;pointer-events:none}
+.crowd.looking .sys-pop{opacity:1;transform:translate(-50%,0)}
+
+/* status */
+.status-panel{padding:30px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;background:radial-gradient(ellipse at 50% 40%,#13264a 0%,var(--panel) 72%)}
+.status{width:100%;max-width:440px;overflow:hidden}
+.status h3{margin:0 0 10px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;letter-spacing:.32em;font-size:15px;color:var(--system);border-bottom:1px solid rgba(98,201,255,.35);padding-bottom:8px}
+.bang{display:inline-grid;place-items:center;width:20px;height:20px;border:1px solid var(--system);border-radius:50%;font-size:12px;letter-spacing:0}
+.status dl{margin:0;display:grid;gap:6px}
+.status .row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;font-size:15px}
+.status dt{color:var(--muted)}
+.status dd{margin:0;font-variant-numeric:tabular-nums}
+.statline{display:flex;flex-wrap:wrap;gap:6px 22px;margin-block:8px;padding-block:7px;border-block:1px dashed rgba(98,201,255,.22);font-size:15px;color:var(--muted)}
+.statline b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums;margin-left:8px}
+.glitchy{text-shadow:1.5px 0 var(--fail),-1.5px 0 var(--system)}
+.warn{margin:12px 0 0;color:var(--fail);font-size:14px;line-height:1.45}
+.status.scanning{animation:jitter .12s steps(2) infinite}
+.status.scanning .warn{opacity:0}
+.status.scanning::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--fail);opacity:.8;animation:scanline 1.5s linear}
+.status.failed .warn{animation:flash .9s ease-out 1}
+@keyframes jitter{0%{transform:translate(0,0)}50%{transform:translate(-1.5px,1px)}100%{transform:translate(1px,-1px)}}
+@keyframes scanline{from{top:0}to{top:100%}}
+@keyframes flash{0%,40%{opacity:1}20%,60%{opacity:.15}100%{opacity:1}}
+.ghost-btn{font-family:var(--f-system);font-size:13px;color:var(--muted);background:none;border:1px solid var(--line);padding:6px 12px;cursor:pointer}
+.ghost-btn:hover{color:var(--system);border-color:var(--system)}
+
+/* close-up */
+.closeup{min-height:300px;display:flex;align-items:center;padding:28px 18px;background:radial-gradient(circle at 82% 55%,#1c2a48 0%,var(--panel) 56%)}
+.closeup .head{position:absolute;right:-70px;top:50%;width:300px;height:300px;margin-top:-150px;border-radius:50%;background:#04070d;box-shadow:inset -18px 0 40px rgba(98,201,255,.08)}
+.closeup .glint{position:absolute;left:64px;top:122px;width:38px;height:12px;border-radius:50%;background:var(--system);box-shadow:0 0 18px var(--system),0 0 44px var(--system-glow);animation:glint 4s ease-in-out infinite}
+@keyframes glint{0%,100%{opacity:.8}50%{opacity:1;transform:scaleX(1.12)}}
+.bubble{position:relative;z-index:1;max-width:62%;font-family:var(--f-talk);font-size:22px;line-height:1.3;background:var(--paper);color:var(--paper-ink);padding:26px 34px;border:2px solid #000;border-radius:50%}
+.bubble::after{content:"";position:absolute;right:-20px;top:52%;border:10px solid transparent;border-left:22px solid var(--paper)}
+
+/* action */
+.action{aspect-ratio:4/3;max-width:100%;background:var(--paper)}
+.action canvas,.action svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sfx{position:absolute;font-family:var(--f-display);color:var(--paper-ink);-webkit-text-stroke:7px var(--paper);paint-order:stroke fill;line-height:1;pointer-events:none}
+.sfx.a{left:5%;top:6%;font-size:clamp(40px,10vw,72px);transform:rotate(-9deg)}
+.sfx.b{right:5%;bottom:6%;font-size:clamp(34px,8vw,58px);transform:rotate(6deg);color:var(--fail)}
+.silhouette{fill:var(--paper-ink)}
+.nunchaku-stick{fill:var(--paper-ink);stroke:var(--paper);stroke-width:2}
+.chain{stroke:var(--paper-ink);stroke-width:2.5;stroke-dasharray:3 2}
+.blur-ring{fill:none;stroke:var(--paper-ink);stroke-width:2;opacity:.35;stroke-dasharray:14 10}
+.spin{animation:spin .42s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* regression hint */
+.hint-panel{background:#000;min-height:220px;display:grid;place-items:center;padding:24px}
+.flicker{font-family:var(--f-system);font-size:17px;color:var(--fail);text-align:center;opacity:.05;text-shadow:0 0 12px rgba(255,90,118,.5);animation:flicker 9s steps(1) infinite}
+@keyframes flicker{0%{opacity:.05}69%{opacity:1}70%{opacity:.3}71%{opacity:1}76%{opacity:.05}100%{opacity:.05}}
+
+/* inventory */
+.inv{padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.sys-title{margin:0;font-family:var(--f-system);font-weight:600;font-size:15px;letter-spacing:.3em;color:var(--system);text-align:center}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:10px}
+.item{border:1px solid var(--line);background:var(--panel-2);padding:10px 12px;font-family:var(--f-system);display:flex;flex-direction:column;gap:2px;min-width:0}
+.item .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.item .n{font-size:16px;font-weight:600}
+.item .d{font-size:13px;color:var(--muted)}
+.item.key{border-color:rgba(241,194,91,.45)}
+.item.key .k{color:var(--quest)}
+.item.unknown .n{color:var(--muted)}
+.item.companion{border-color:rgba(98,201,255,.45)}
+.item.companion .k{color:var(--system)}
+
+/* episode list */
+.tbc{text-align:center;font-family:var(--f-narr);font-weight:800;font-size:18px;color:var(--muted);padding-block:12px}
+.eps{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.eps li{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line);font-family:var(--f-system)}
+.eps .no{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.eps .t{font-size:16px;min-width:0}
+.eps .t small{display:block;color:var(--muted);font-size:13px}
+.eps .st{font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.eps .st.read{color:var(--system);border-color:var(--system)}
+.eps .st.sealed{color:var(--fail);border-color:rgba(255,90,118,.5)}
+
+/* quest */
+.quest-panel{padding:34px 18px;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 50%,#2a2412 0%,var(--panel) 72%)}
+.sys.quest{border-color:var(--quest);box-shadow:0 0 24px rgba(241,194,91,.35),inset 0 0 28px rgba(241,194,91,.1);background:linear-gradient(180deg,rgba(48,38,14,.94),rgba(22,18,8,.96));max-width:440px;width:100%;text-align:center;padding:18px}
+.quest .label{font-size:12px;letter-spacing:.3em;color:var(--quest)}
+.quest h3{margin:6px 0 10px;font-size:20px;font-weight:600;color:var(--text)}
+.quest dl{margin:0;display:grid;gap:4px;font-size:14px}
+.quest dl div{display:flex;justify-content:center;gap:8px}
+.quest dt{color:var(--muted)}
+.quest dd{margin:0}
+.choices{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.choice{font-family:var(--f-system);font-weight:600;font-size:15px;padding:9px 24px;border:1px solid var(--quest);background:var(--quest-soft);color:var(--quest);cursor:pointer}
+.choice:hover{background:rgba(241,194,91,.24)}
+.choice.decline{border-color:var(--line);color:var(--muted);background:none}
+.quest-out{min-height:1.5em;margin:12px 0 0;font-size:14px}
+.quest-out.fail{color:var(--fail)}
+.quest-out.ok{color:var(--quest)}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* kit */
+.kit{display:flex;flex-direction:column;gap:30px;border-top:1px solid var(--line);padding-top:30px}
+.kit > header{display:flex;flex-direction:column;gap:6px}
+.kit h2{font-family:var(--f-display);font-weight:400;font-size:30px;margin:0}
+.kit h3{font-family:var(--f-system);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:600}
+.kit p{margin:0;max-width:65ch;font-family:var(--f-system);color:var(--muted);font-size:15px}
+.kit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:32px}
+.kit-grid > *{min-width:0}
+.swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sw{display:flex;flex-direction:column;gap:3px;font-family:var(--f-system);font-size:12px;color:var(--muted)}
+.sw i{display:block;height:44px;border:1px solid var(--line)}
+.sw b{color:var(--text);font-weight:600}
+.type-spec{display:flex;flex-direction:column;gap:12px}
+.type-spec div{display:flex;flex-direction:column;gap:2px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.type-spec small{font-family:var(--f-system);font-size:12px;color:var(--muted)}
+.ts-display{font-family:var(--f-display);font-size:26px;line-height:1.1}
+.ts-system{font-family:var(--f-system);font-size:17px;color:var(--system)}
+.ts-narr{font-family:var(--f-narr);font-weight:700;font-size:18px}
+.ts-talk{font-family:var(--f-talk);font-size:19px}
+
+.lab{display:flex;flex-direction:column;gap:14px;font-family:var(--f-system)}
+.lab-state{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:14px;color:var(--muted)}
+.chip{display:inline-block;font-size:13px;padding:2px 10px;border:1px solid var(--system);color:var(--system);background:var(--system-soft)}
+.lab label{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;font-size:14px}
+.lab input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--system)}
+.lab output{color:var(--system);font-variant-numeric:tabular-nums}
+.timeline{display:flex;height:28px;border:1px solid var(--line);position:relative;overflow:hidden}
+.timeline span{display:grid;place-items:center;font-size:11px;color:var(--muted);border-right:1px solid var(--line);min-width:0;overflow:hidden;white-space:nowrap;font-variant-numeric:tabular-nums}
+.timeline span:last-of-type{border-right:0}
+.timeline .prog{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--system-soft);border-right:2px solid var(--system);pointer-events:none}
+.log{list-style:none;margin:0;padding:0;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:2px;font-variant-numeric:tabular-nums;min-height:8.5em}
+.log b{color:var(--text);font-weight:500;display:inline-block;min-width:4.2em}
+.lab-btns{display:flex;flex-wrap:wrap;gap:8px}
+
+.decisions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:20px}
+.decisions ul{margin:0;padding-left:18px;font-family:var(--f-system);font-size:14px;display:flex;flex-direction:column;gap:5px}
+.decisions .in h3{color:var(--system)}
+.decisions .out h3{color:var(--fail)}
+.decisions .later h3{color:var(--quest)}
+
+.hiatus{border:1px solid var(--line);background:var(--panel);padding:26px 18px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.hiatus .sys{font-size:15px;max-width:100%}
+.hiatus p{font-family:var(--f-narr);color:var(--muted);font-size:15px}
+
+/* toasts */
+#toasts{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:16px;z-index:50;display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 32px));pointer-events:none}
+.toast{font-family:var(--f-system);font-size:13px;line-height:1.45;padding:10px 12px;color:var(--text);background:rgba(10,20,38,.96);border:1px solid var(--system);box-shadow:0 0 18px var(--system-glow);animation:tin .35s ease-out;transition:opacity .4s,transform .4s}
+.toast b{color:var(--system);font-weight:600}
+.toast.out{opacity:0;transform:translateX(12px)}
+@keyframes tin{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+
+/* cat */
+#cat{position:fixed;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(6px + env(safe-area-inset-bottom,0px));z-index:60;width:116px;height:100px;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#cat svg{width:100%;height:100%;overflow:visible;display:block}
+#cat .pose{opacity:0;transition:opacity .3s ease}
+#cat .pose.on{opacity:1}
+#cat .bumpg{transform-box:view-box;transform-origin:60px 96px}
+#cat.bump .bumpg{animation:bump .35s ease-out}
+#cat.trap .bumpg{animation:shake .35s linear infinite}
+@keyframes bump{0%{transform:scale(1,1)}40%{transform:scale(1.05,.94)}100%{transform:scale(1,1)}}
+.fur{fill:var(--fur);stroke:var(--cat-ink);stroke-width:2;stroke-linejoin:round}
+.furl{fill:var(--fur-light)}
+.inner{fill:var(--blush)}
+.ink{fill:var(--cat-ink)}
+.shine{fill:#fff}
+.inkl{fill:none;stroke:var(--cat-ink);stroke-width:1.8;stroke-linecap:round}
+.whisk{fill:none;stroke:var(--cat-ink);stroke-width:.9;opacity:.55;stroke-linecap:round}
+.tailo{fill:none;stroke:var(--cat-ink);stroke-width:9;stroke-linecap:round}
+.taili{fill:none;stroke:var(--fur);stroke-width:5.2;stroke-linecap:round}
+.shadow{fill:rgba(0,0,0,.45)}
+.blush{fill:var(--blush);opacity:.25;transition:opacity .3s}
+#cat[data-eyes="happy"] .blush{opacity:.9}
+.eyes-happy,.eyes-closed,.eyes-wide{display:none}
+#cat[data-eyes="happy"] .eyes-open,#cat[data-eyes="closed"] .eyes-open,#cat[data-eyes="wide"] .eyes-open{display:none}
+#cat[data-eyes="happy"] .eyes-happy,#cat[data-eyes="closed"] .eyes-closed,#cat[data-eyes="wide"] .eyes-wide{display:inline}
+.eyes-open .eye{transform-box:fill-box;transform-origin:center;transition:transform .55s ease}
+#cat.slowblink .eyes-open .eye{transform:scaleY(.1)}
+#cat.slowblink .eyes-open .shine{opacity:0}
+.swish{transform-box:view-box;animation:swish 3.2s ease-in-out infinite}
+@keyframes swish{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
+.knead{transform-box:fill-box;transform-origin:center bottom;animation:knead .7s ease-in-out infinite alternate}
+#cat.trap .knead{animation-duration:.14s}
+@keyframes knead{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.heart{position:absolute;left:50%;top:18px;font-size:16px;color:var(--blush);pointer-events:none;animation:heart 1.3s ease-out forwards}
+@keyframes heart{from{opacity:0;transform:translate(-50%,0) scale(.6)}20%{opacity:1}to{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-48px) scale(1.1)}}
+.zzz{position:absolute;left:14px;top:6px;font-family:var(--f-system);font-weight:600;color:var(--muted);font-size:15px;opacity:0;pointer-events:none;transition:opacity .4s}
+#cat[data-pose="sleep"] .zzz{opacity:1}
+.zzz span{display:inline-block;animation:zz 2.4s ease-in-out infinite}
+.zzz span:nth-child(2){animation-delay:.4s;font-size:.85em}
+.zzz span:nth-child(3){animation-delay:.8s;font-size:.7em}
+@keyframes zz{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-6px);opacity:1}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .flicker{opacity:.5}
+}
+</style>
+
+<div class="wrap">
+  <div class="topbar"><span><b>Season 1 planning</b> · Prototype v0</span><span>Dark only · Hover the cat, bottom right</span></div>
+
+  <section class="cover" aria-labelledby="series-title">
+    <div class="cover-art" aria-hidden="true">
+      <span class="stamp">ONGOING</span>
+      <p class="cover-title">I Was Just an <span>NPC</span>, but the System Can't Read My Stats</p>
+      <svg id="cover-svg" viewBox="0 0 300 220"></svg>
+    </div>
+    <div class="info">
+      <div class="eyebrow">A webtoon by Justin</div>
+      <h1 class="series-title" id="series-title">I Was Just an <em>NPC</em>, but the System Can't Read My Stats</h1>
+      <ul class="tags"><li>Fantasy</li><li>System</li><li>NPC</li><li>Comedy</li><li>Regression?</li></ul>
+      <div class="meta"><span>★ <b>9.98</b> (rated by 1 cat)</span><span>Status <b>Ongoing · Season 1</b></span><span>Episodes <b>1</b></span></div>
+      <p class="synopsis">In a world where the System measures everyone, one background NPC returns a value it can't read. He was never supposed to be noticed. Then a Reader looked his way.</p>
+      <a class="btn" href="#ep1">▶ Start Reading Ep. 1</a>
+    </div>
+  </section>
+
+  <article class="strip" id="ep1" aria-label="Episode 1 storyboard">
+    <header class="ep-head"><h2>Ep. 1 · Background Character</h2><span>Storyboard</span></header>
+
+    <div class="panel crowd" id="crowd" data-toast="Recruiter in a Hurry|is skimming.">
+      <svg id="crowd-svg" viewBox="0 0 640 360" role="img" aria-label="A crowd of named characters, and one figure in the back tagged NPC"></svg>
+      <div class="narr">Every story has a main character.</div>
+      <div class="sys sys-pop" aria-live="polite">[A Reader is… looking at an NPC?]</div>
+      <span class="hint">Hover or tap the one tagged [NPC]</span>
+    </div>
+    <p class="note"><b>Art note</b>One wide crowd panel. Every important character gets a name tag. The NPC stands in the back with nothing but [NPC].</p>
+
+    <div class="beat"><div class="narr">And then there's everyone else.</div></div>
+
+    <div class="panel status-panel" data-toast="Senior Engineer Who Has Seen Everything|raises an eyebrow.">
+      <div class="sys status" id="status" role="group" aria-label="Status window">
+        <h3><span class="bang">!</span>STATUS</h3>
+        <dl>
+          <div class="row"><dt>Name</dt><dd>Justin</dd></div>
+          <div class="row"><dt>Class</dt><dd>[Background NPC]</dd></div>
+          <div class="row"><dt>Level</dt><dd class="glitchy" data-final="▓▓ unreadable" data-kind="lv">▓▓ unreadable</dd></div>
+        </dl>
+        <div class="statline"><span>STR<b class="glitchy" data-final="???" data-kind="num">???</b></span><span>INT<b class="glitchy" data-final="???" data-kind="num">???</b></span><span>AGI<b class="glitchy" data-final="???" data-kind="num">???</b></span></div>
+        <dl>
+          <div class="row"><dt>Passive</dt><dd class="glitchy" data-final="[Unidentified]" data-kind="txt">[Unidentified]</dd></div>
+        </dl>
+        <p class="warn">⚠ Measurement failed. The target does not fit in this window.</p>
+      </div>
+      <button class="ghost-btn" id="rescan" type="button">Scan again</button>
+    </div>
+
+    <div class="panel closeup">
+      <div class="head" aria-hidden="true"><div class="glint"></div></div>
+      <p class="bubble">…You can see me?</p>
+    </div>
+
+    <div class="panel action" id="action" data-toast="Tekken Ranked Warrior|demands frame data.">
+      <canvas id="lines" aria-hidden="true"></canvas>
+      <svg viewBox="0 0 400 300" aria-label="The NPC spins a nunchaku" role="img">
+        <path class="silhouette" d="M137 300 L145 174 Q150 118 200 113 Q250 118 255 174 L263 300 Z"/>
+        <circle class="silhouette" cx="200" cy="80" r="32"/>
+        <path d="M232 132 L284 98" stroke="var(--paper-ink)" stroke-width="20" stroke-linecap="round" fill="none"/>
+        <path d="M284 98 L300 64" stroke="var(--paper-ink)" stroke-width="11" stroke-linecap="round" fill="none"/>
+        <g transform="translate(300 64)">
+          <g class="spin">
+            <circle class="blur-ring" r="62"/>
+            <line class="chain" x1="0" y1="0" x2="0" y2="20"/>
+            <rect class="nunchaku-stick" x="-5.5" y="20" width="11" height="42" rx="5.5"/>
+          </g>
+        </g>
+      </svg>
+      <span class="sfx a" aria-hidden="true">휘릭—</span>
+      <span class="sfx b" aria-hidden="true">WHAP</span>
+    </div>
+    <p class="note"><b>Placeholder</b>The final version is one commissioned panel of the NPC's only move: a nunchaku flourish inspired by Law, drawn as an original character. It's the only bright panel in the episode.</p>
+
+    <div class="panel hint-panel">
+      <p class="flicker">[…This is not the first time this has happened.]</p>
+    </div>
+    <p class="note"><b>Easter egg</b>Flickers for about half a second every 9 seconds. Never explained.</p>
+
+    <div class="panel inv" data-toast="Reader With 400 Tabs Open|bookmarks this series.">
+      <h3 class="sys-title">[ INVENTORY ]</h3>
+      <div class="items">
+        <div class="item"><span class="k">Item · Common</span><span class="n">Git</span><span class="d">Has seen things.</span></div>
+        <div class="item"><span class="k">Item · Common</span><span class="n">JavaScript</span><span class="d">Frequently wielded.</span></div>
+        <div class="item unknown"><span class="k">Item · Unidentified</span><span class="n">???</span><span class="d">Appraise later. Your real stack goes here.</span></div>
+        <div class="item key"><span class="k">Key item</span><span class="n">Tekken 8</span><span class="d">Main: a nunchaku user. Rank: classified.</span></div>
+        <div class="item key"><span class="k">Key item</span><span class="n">Manhwa Backlog</span><span class="d">Chapters unread: too many.</span></div>
+        <div class="item companion"><span class="k">Companion</span><span class="n">Cat in the Corner</span><span class="d">Affection: <span id="aff">0</span></span></div>
+      </div>
+    </div>
+
+    <div class="tbc">To be continued</div>
+
+    <ol class="eps" aria-label="Episode list">
+      <li><span class="no">Ep. 1</span><span class="t">Background Character<small>The System measures everyone. Almost.</small></span><span class="st read">Reading</span></li>
+      <li><span class="no">Ep. 2</span><span class="t">[Sealed]<small>This chapter is still being written.</small></span><span class="st sealed">Sealed</span></li>
+      <li><span class="no">Side</span><span class="t">The NPC Built His Own World<small>This website.</small></span><span class="st">WIP</span></li>
+      <li><span class="no">Next</span><span class="t">TBA<small>What the NPC is learning now.</small></span><span class="st">Soon</span></li>
+    </ol>
+
+    <div class="panel quest-panel" data-toast="Hiring Manager|leans forward.">
+      <div class="sys quest" id="quest">
+        <div class="label">HIDDEN QUEST</div>
+        <h3>Recruit the Unmeasurable NPC</h3>
+        <dl>
+          <div><dt>Reward</dt><dd>???</dd></div>
+          <div><dt>Penalty for failure</dt><dd>You'll never know.</dd></div>
+        </dl>
+        <div class="choices">
+          <button class="choice" id="accept" type="button">Accept</button>
+          <button class="choice decline" id="decline" type="button">Decline</button>
+        </div>
+        <p class="quest-out" id="quest-out" aria-live="polite"></p>
+      </div>
+    </div>
+  </article>
+
+  <section class="kit" aria-labelledby="kit-title">
+    <header>
+      <div class="eyebrow">Planning only, not part of the site</div>
+      <h2 id="kit-title">Design kit</h2>
+      <p>Palette, type, and the cat's timing. Change the sliders, then pet the cat in the bottom-right corner to feel each setting.</p>
+    </header>
+
+    <div class="kit-grid">
+      <div>
+        <h3>Palette</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:var(--ink)"></i><b>Night Ink</b>page</div>
+          <div class="sw"><i style="background:var(--panel)"></i><b>Panel</b>surfaces</div>
+          <div class="sw"><i style="background:var(--system)"></i><b>System Blue</b>windows</div>
+          <div class="sw"><i style="background:var(--fail)"></i><b>Failure Red</b>glitches</div>
+          <div class="sw"><i style="background:var(--quest)"></i><b>Quest Gold</b>contact</div>
+          <div class="sw"><i style="background:var(--paper)"></i><b>Paper</b>bubbles, action</div>
+        </div>
+      </div>
+      <div>
+        <h3>Type</h3>
+        <div class="type-spec">
+          <div><span class="ts-display">I WAS JUST AN NPC</span><small>Black Han Sans · titles, sound effects</small></div>
+          <div><span class="ts-system">[ STATUS ] Measurement failed.</span><small>Chakra Petch · System windows, UI</small></div>
+          <div><span class="ts-narr">Every story has a main character.</span><small>Nanum Myeongjo · narration boxes</small></div>
+          <div><span class="ts-talk">…You can see me?</span><small>Gowun Dodum · speech bubbles</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-grid">
+      <div class="lab">
+        <h3>Cat lab</h3>
+        <div class="lab-state">State <span class="chip" id="cat-state">sitting</span> Affection <span class="chip" id="aff2">0</span></div>
+        <label for="s-recov">Recovery after you stop petting <output id="o-recov">14s</output><input type="range" id="s-recov" min="8" max="30" step="1" value="14"></label>
+        <div class="timeline" id="timeline" aria-label="Recovery stages"><div class="prog" id="prog"></div></div>
+        <label for="s-sleep">Falls asleep when untouched for <output id="o-sleep">60s</output><input type="range" id="s-sleep" min="10" max="120" step="5" value="60"></label>
+        <label for="s-trap">Belly trap after hovering for <output id="o-trap">8s</output><input type="range" id="s-trap" min="4" max="15" step="1" value="8"></label>
+        <div class="lab-btns">
+          <button class="ghost-btn" id="sleep-now" type="button">Put cat to sleep now</button>
+          <button class="ghost-btn" id="reset-cat" type="button">Reset cat</button>
+        </div>
+      </div>
+      <div>
+        <h3>What the cat just did</h3>
+        <ul class="log" id="log"><li><b>0.0s</b> sitting, watching your cursor</li></ul>
+      </div>
+    </div>
+
+    <div class="decisions">
+      <div class="in"><h3>In</h3><ul>
+        <li>An NPC the System can't measure</li>
+        <li>Tools as inventory, no fake stats</li>
+        <li>One action panel, inspired by Law</li>
+        <li>Constellation commentary</li>
+        <li>Hidden Quest for contact</li>
+        <li>A hint of regression, never explained</li>
+        <li>The cat in the corner</li>
+      </ul></div>
+      <div class="out"><h3>Out</h3><ul>
+        <li>SpongeBob time-skip cards</li>
+        <li>Romance mode and light theme</li>
+        <li>Fake stats or skill levels</li>
+        <li>Apocalypse prologue</li>
+        <li>Fake terminal, matrix rain</li>
+      </ul></div>
+      <div class="later"><h3>Later</h3><ul>
+        <li>Ep. 2, when you're ready to unseal it</li>
+        <li>Real art: NPC, action panel, cat</li>
+        <li>Your real inventory</li>
+        <li>Framework and hosting</li>
+      </ul></div>
+    </div>
+
+    <div>
+      <h3>404 page</h3>
+      <div class="hiatus">
+        <div class="sys">[NOTICE] The author is on hiatus.</div>
+        <p>This page doesn't exist yet. Return to Episode 1.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+
+<button id="cat" type="button" aria-label="Pet the cat" data-pose="sit" data-eyes="open">
+  <svg id="cat-svg" viewBox="0 0 120 104" aria-hidden="true"></svg>
+  <span class="zzz" aria-hidden="true"><span>z</span><span>z</span><span>z</span></span>
+</button>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- toasts ---------- */
+  const box = $('#toasts');
+  function toast(html, ms = 4200) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = html;
+    box.appendChild(el);
+    while (box.children.length > 3) box.firstChild.remove();
+    setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 450); }, ms);
+  }
+  const constellation = (name, act) => `[The Constellation <b>"${name}"</b> ${act}]`;
+
+  /* ---------- crowd figures ---------- */
+  function figPath(x, b, s) {
+    return `M${x - 30 * s} ${b} L${x - 26 * s} ${b - 60 * s} Q${x - 24 * s} ${b - 86 * s} ${x} ${b - 88 * s} Q${x + 24 * s} ${b - 86 * s} ${x + 26 * s} ${b - 60 * s} L${x + 30 * s} ${b} Z`;
+  }
+  function figure({ x, b, s, tag, cls = '', tagLift = 128 }) {
+    const ty = b - tagLift * s;
+    return `<g class="fig ${cls}">
+      <path class="body" d="${figPath(x, b, s)}"/>
+      <circle class="body" cx="${x}" cy="${b - 104 * s}" r="${15 * s}"/>
+      ${tag ? `<g class="tag" data-x="${x}"><rect x="${x - 40}" y="${ty - 14}" width="80" height="20" rx="2"/><text x="${x}" y="${ty}" text-anchor="middle">[${tag}]</text></g>` : ''}
+    </g>`;
+  }
+  function city(w, base, seed) {
+    let out = '', x = 0, n = seed;
+    while (x < w) {
+      n = (n * 9301 + 49297) % 233280;
+      const bw = 40 + (n % 50), bh = 60 + (n % 110);
+      out += `<rect class="city" x="${x}" y="${base - bh}" width="${bw - 4}" height="${bh}"/>`;
+      x += bw;
+    }
+    return out;
+  }
+  function fitTags(svg) {
+    $$('.tag', svg).forEach(g => {
+      const t = g.querySelector('text'), r = g.querySelector('rect');
+      const w = t.getComputedTextLength() + 16, x = +g.dataset.x;
+      r.setAttribute('x', x - w / 2);
+      r.setAttribute('width', w);
+    });
+  }
+
+  const crowdSvg = $('#crowd-svg');
+  crowdSvg.innerHTML =
+    city(640, 300, 7) +
+    [
+      { x: 60, b: 292, s: .72, cls: 'back' },
+      { x: 170, b: 292, s: .72, cls: 'back' },
+      { x: 610, b: 292, s: .72, cls: 'back' },
+      { x: 470, b: 292, s: .72, tag: 'NPC', cls: 'back npc', tagLift: 128 },
+      { x: 110, b: 360, s: 1, tag: 'Healer · Lv. 71' },
+      { x: 395, b: 360, s: 1, tag: 'Rival · Lv. 88' },
+      { x: 545, b: 360, s: 1.02, tag: 'Guild Master · Lv. 95' },
+      { x: 250, b: 360, s: 1.15, tag: 'Main Character · Lv. 92 · S', cls: 'mc', tagLift: 138 },
+    ].map(figure).join('') +
+    `<rect class="npc-hit" x="438" y="176" width="64" height="118" tabindex="0" role="button" aria-label="Look at the NPC"/>`;
+
+  const coverSvg = $('#cover-svg');
+  coverSvg.innerHTML =
+    city(300, 190, 3) +
+    [
+      { x: 70, b: 182, s: .5, cls: 'back' },
+      { x: 205, b: 182, s: .5, tag: 'NPC', cls: 'back npc' },
+      { x: 255, b: 182, s: .5, cls: 'back' },
+      { x: 40, b: 222, s: .72 },
+      { x: 135, b: 222, s: .82, cls: 'mc' },
+      { x: 250, b: 222, s: .72 },
+    ].map(figure).join('');
+  coverSvg.classList.add('crowd', 'looking');
+  $$('.fig.npc .tag text', coverSvg).forEach(t => t.style.fill = 'var(--system)');
+  $$('.fig.npc .tag rect', coverSvg).forEach(r => r.style.stroke = 'var(--system)');
+
+  const fit = () => { fitTags(crowdSvg); fitTags(coverSvg); };
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
+  const crowd = $('#crowd'), hit = $('.npc-hit', crowdSvg);
+  let lastType = 'mouse';
+  const look = on => crowd.classList.toggle('looking', on);
+  hit.addEventListener('pointerdown', e => { lastType = e.pointerType; });
+  hit.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') look(true); });
+  hit.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') look(false); });
+  hit.addEventListener('focus', () => look(true));
+  hit.addEventListener('blur', () => look(false));
+  hit.addEventListener('click', () => { lastType === 'mouse' ? look(true) : look(!crowd.classList.contains('looking')); });
+  hit.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); look(!crowd.classList.contains('looking')); } });
+
+  /* ---------- status scan ---------- */
+  const status = $('#status');
+  const glyphs = '▓░#%?0123456789';
+  const rnd = n => Array.from({ length: n }, () => glyphs[Math.floor(Math.random() * glyphs.length)]).join('');
+  function scan() {
+    if (status.classList.contains('scanning')) return;
+    const els = $$('[data-final]', status);
+    status.classList.remove('failed');
+    if (reduce) { status.classList.add('failed'); return; }
+    status.classList.add('scanning');
+    const iv = setInterval(() => {
+      els.forEach(el => {
+        const k = el.dataset.kind;
+        el.textContent = k === 'lv' ? `Lv. ${10 + Math.floor(Math.random() * 89)}` :
+                         k === 'num' ? String(1 + Math.floor(Math.random() * 98)) :
+                         `[${rnd(10)}]`;
+      });
+    }, 60);
+    setTimeout(() => {
+      clearInterval(iv);
+      els.forEach(el => { el.textContent = el.dataset.final; });
+      status.classList.remove('scanning');
+      void status.offsetWidth;
+      status.classList.add('failed');
+    }, 1500);
+  }
+  $('#rescan').addEventListener('click', scan);
+
+  /* ---------- speed lines ---------- */
+  const cv = $('#lines'), ctx = cv.getContext('2d');
+  const ink = getComputedStyle(document.documentElement).getPropertyValue('--paper-ink').trim() || '#0b0f1a';
+  function drawLines() {
+    const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+    if (!r.width) return;
+    cv.width = r.width * d; cv.height = r.height * d;
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+    ctx.clearRect(0, 0, r.width, r.height);
+    const cx = r.width * .62, cy = r.height * .3, R = Math.hypot(r.width, r.height);
+    ctx.fillStyle = ink;
+    for (let i = 0; i < 120; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const inner = R * (.2 + Math.random() * .16), outer = R;
+      const w = .6 + Math.random() * 5.5;
+      const px = -Math.sin(a), py = Math.cos(a);
+      ctx.globalAlpha = .35 + Math.random() * .55;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner);
+      ctx.lineTo(cx + Math.cos(a) * outer + px * w, cy + Math.sin(a) * outer + py * w);
+      ctx.lineTo(cx + Math.cos(a) * outer - px * w, cy + Math.sin(a) * outer - py * w);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  let lineTimer = null;
+  new ResizeObserver(drawLines).observe(cv);
+  new IntersectionObserver(([e]) => {
+    clearInterval(lineTimer);
+    if (e.isIntersecting && !reduce) lineTimer = setInterval(drawLines, 110);
+  }).observe($('#action'));
+
+  /* ---------- panels entering view ---------- */
+  let scanned = false;
+  const seen = new Set();
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    if (!seen.has(el)) {
+      seen.add(el);
+      const [n, a] = el.dataset.toast.split('|');
+      toast(constellation(n, a));
+    }
+    if (el.classList.contains('status-panel') && !scanned) { scanned = true; scan(); }
+  }), { threshold: .55 });
+  $$('[data-toast]').forEach(el => io.observe(el));
+
+  /* ---------- quest ---------- */
+  const out = $('#quest-out'), dec = $('#decline'), questWin = $('#quest');
+  function accept() {
+    out.className = 'quest-out ok';
+    out.textContent = '[Quest accepted.] Contact links go here: email · GitHub · LinkedIn';
+    toast('<b>[System]</b> Reward pending. The NPC will remember this.');
+  }
+  $('#accept').addEventListener('click', accept);
+  dec.addEventListener('click', () => {
+    if (dec.dataset.accept) return accept();
+    out.className = 'quest-out fail';
+    out.textContent = '[You cannot refuse this quest.]';
+    questWin.classList.remove('shake'); void questWin.offsetWidth; questWin.classList.add('shake');
+    dec.textContent = 'Accept';
+    dec.classList.remove('decline');
+    dec.dataset.accept = '1';
+  });
+
+  /* ---------- cat drawing ---------- */
+  function head(cx, cy, rot, forced) {
+    const open = `<g class="eyes-open"><g class="pupils"><ellipse class="eye ink" cx="-6.5" cy="0" rx="2.4" ry="3.2"/><ellipse class="eye ink" cx="6.5" cy="0" rx="2.4" ry="3.2"/><circle class="shine" cx="-5.8" cy="-1.2" r=".8"/><circle class="shine" cx="7.2" cy="-1.2" r=".8"/></g></g>`;
+    const happy = `<path class="inkl" d="M-9.5 1.2q3 -4 6 0M3.5 1.2q3 -4 6 0"/>`;
+    const closed = `<path class="inkl" d="M-9.5 0q3 3 6 0M3.5 0q3 3 6 0"/>`;
+    const wide = `<circle class="ink" cx="-6.5" cy="0" r="3.6"/><circle class="ink" cx="6.5" cy="0" r="3.6"/><circle class="shine" cx="-5.3" cy="-1.3" r="1.3"/><circle class="shine" cx="7.7" cy="-1.3" r="1.3"/>`;
+    const eyes = forced === 'happy' ? happy : forced === 'closed' ? closed :
+      `${open}<g class="eyes-happy">${happy}</g><g class="eyes-closed">${closed}</g><g class="eyes-wide">${wide}</g>`;
+    return `<g transform="translate(${cx} ${cy}) rotate(${rot})">
+      <path class="fur" d="M-15 -5 L-13 -24 L-2 -13 Z"/><path class="fur" d="M15 -5 L13 -24 L2 -13 Z"/>
+      <path class="inner" d="M-12.4 -8.5 L-11.6 -19 L-5.6 -12.6 Z"/><path class="inner" d="M12.4 -8.5 L11.6 -19 L5.6 -12.6 Z"/>
+      <ellipse class="fur" cx="0" cy="0" rx="18" ry="15.5"/>
+      <ellipse class="blush" cx="-11" cy="5.5" rx="3" ry="1.8"/><ellipse class="blush" cx="11" cy="5.5" rx="3" ry="1.8"/>
+      ${eyes}
+      <path class="inner" d="M-1.7 4.2h3.4l-1.7 2.1z"/>
+      <path class="inkl" style="stroke-width:1.2" d="M0 6.4q-1.4 2.3 -3.4 1.4M0 6.4q1.4 2.3 3.4 1.4"/>
+      <path class="whisk" d="M-10 5.2L-21 3.2M-10 7L-21 8.6M10 5.2L21 3.2M10 7L21 8.6"/>
+    </g>`;
+  }
+  const tail = (d, ox, oy) => `<g${ox != null ? ` class="swish" style="transform-origin:${ox}px ${oy}px"` : ''}><path class="tailo" d="${d}"/><path class="taili" d="${d}"/></g>`;
+  const sitBody = `<ellipse class="fur" cx="60" cy="73" rx="22" ry="21"/><ellipse class="furl" cx="60" cy="80" rx="11" ry="11"/><ellipse class="fur" cx="52" cy="92" rx="6.5" ry="4"/><ellipse class="fur" cx="68" cy="92" rx="6.5" ry="4"/>`;
+  const sitTail = tail('M80 88C100 92 106 76 97 68', 80, 88);
+  const paw = (x, y, delay) => `<ellipse class="fur knead" cx="${x}" cy="${y}" rx="4" ry="6.5" style="animation-delay:${delay}s"/>`;
+  const POSES = {
+    sit: sitTail + sitBody + head(60, 46, 0),
+    happy: sitTail + sitBody + head(60, 47, -13, 'happy'),
+    groom: sitTail + sitBody + head(60, 47, 9, 'closed') + `<ellipse class="fur" cx="50" cy="58" rx="5" ry="7.5" transform="rotate(-25 50 58)"/>`,
+    loaf: `<ellipse class="fur" cx="64" cy="80" rx="30" ry="15"/>` + tail('M90 86C98 96 72 98 54 95') + head(46, 66, -4),
+    side: tail('M96 84C110 86 114 80 116 72', 96, 84) + `<ellipse class="fur" cx="66" cy="82" rx="33" ry="13"/><ellipse class="furl" cx="62" cy="87" rx="20" ry="5"/><ellipse class="fur" cx="88" cy="90" rx="9" ry="4"/><ellipse class="fur" cx="40" cy="92" rx="8" ry="3.5"/>` + head(34, 74, -25),
+    belly: paw(52, 66, 0) + paw(61, 63, .35) + paw(73, 63, .15) + paw(82, 66, .5) + tail('M97 86C110 84 106 70 114 66', 97, 86) + `<ellipse class="fur" cx="66" cy="82" rx="31" ry="13"/><ellipse class="furl" cx="67" cy="76" rx="20" ry="6"/>` + head(30, 76, -110),
+    stretch: tail('M90 66C98 50 92 40 100 32', 90, 66) + `<ellipse class="fur" cx="86" cy="86" rx="5" ry="9"/><ellipse class="fur" cx="66" cy="76" rx="28" ry="12.5" transform="rotate(-16 66 76)"/><ellipse class="fur" cx="32" cy="92" rx="14" ry="3.6"/>` + head(36, 82, -6, 'closed'),
+    sleep: `<ellipse class="fur" cx="64" cy="82" rx="31" ry="14"/>` + head(40, 80, -14, 'closed') + tail('M92 84C102 98 62 99 38 95'),
+  };
+  const catSvg = $('#cat-svg');
+  catSvg.innerHTML = `<ellipse class="shadow" cx="62" cy="96" rx="36" ry="4.5"/><g class="bumpg">${
+    Object.entries(POSES).map(([k, v]) => `<g class="pose${k === 'sit' ? ' on' : ''}" data-pose="${k}">${v}</g>`).join('')
+  }</g>`;
+
+  /* ---------- cat behaviour ---------- */
+  const cat = $('#cat');
+  const poses = $$('.pose', catSvg);
+  const C = { recovery: 14000, sleepAfter: 60000, trapAfter: 8000, hoverDelay: 400 };
+  const LABEL = { sit: 'sitting', happy: 'loves it', belly: 'belly up', trap: 'belly trap!', side: 'rolling to side', loaf: 'loafing', stretch: 'stretching', groom: 'grooming', sleep: 'asleep' };
+  const RECOVERING = ['side', 'loaf', 'stretch', 'groom'];
+  const t0 = performance.now();
+  let st = 'sit', timers = [], last = Date.now(), affection = 0, lastPleased = 0, lastSlow = 0;
+  const src = new Set();
+
+  const logEl = $('#log'), chip = $('#cat-state');
+  function log(msg) {
+    const li = document.createElement('li');
+    li.innerHTML = `<b>${((performance.now() - t0) / 1000).toFixed(1)}s</b> ${msg}`;
+    logEl.prepend(li);
+    while (logEl.children.length > 7) logEl.lastChild.remove();
+  }
+  function clearT() { timers.forEach(clearTimeout); timers = []; }
+  function later(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function go(p, eyes, msg) {
+    st = p;
+    poses.forEach(g => g.classList.toggle('on', g.dataset.pose === p));
+    cat.dataset.pose = p;
+    cat.dataset.eyes = eyes || 'open';
+    chip.textContent = LABEL[p];
+    cat.classList.remove('bump'); void cat.offsetWidth; cat.classList.add('bump');
+    if (msg) log(msg);
+  }
+  function hearts(n) {
+    if (reduce) return;
+    for (let i = 0; i < n; i++) {
+      setTimeout(() => {
+        const h = document.createElement('span');
+        h.className = 'heart';
+        h.textContent = '♥';
+        h.style.setProperty('--dx', `${Math.round(Math.random() * 36 - 18)}px`);
+        cat.appendChild(h);
+        setTimeout(() => h.remove(), 1400);
+      }, i * 220);
+    }
+  }
+  function pleased() {
+    affection++;
+    $('#aff').textContent = affection;
+    $('#aff2').textContent = affection;
+    if (Date.now() - lastPleased > 12000) {
+      lastPleased = Date.now();
+      toast(constellation('Cat in the Corner', 'is pleased. Affection +1'));
+    }
+  }
+
+  // progress bar for the recovery timeline in the lab
+  const prog = $('#prog');
+  let progStart = null, progDur = 0;
+  function progLoop() {
+    if (progStart == null) { prog.style.width = '0'; return; }
+    const f = Math.min(1, (performance.now() - progStart) / progDur);
+    prog.style.width = `${f * 100}%`;
+    if (f < 1) requestAnimationFrame(progLoop);
+  }
+  function startProg(ms) { progStart = performance.now(); progDur = ms; requestAnimationFrame(progLoop); }
+  function stopProg() { progStart = null; prog.style.width = '0'; }
+
+  function enter() {
+    last = Date.now();
+    if (st === 'trap') return;
+    clearT(); stopProg();
+    if (st === 'sleep') { go('sit', 'open', 'wakes up'); later(600, startPet); return; }
+    if (st === 'belly' || RECOVERING.includes(st)) { later(180, () => goBelly('remembers you, flops straight back down')); return; }
+    later(C.hoverDelay, startPet);
+  }
+  function startPet() {
+    go('happy', 'happy', 'leans into the pets');
+    hearts(2);
+    later(750, () => goBelly('rolls over, belly up'));
+  }
+  function goBelly(msg) {
+    const fresh = st !== 'belly' && st !== 'trap';
+    cat.classList.remove('trap');
+    go('belly', 'happy', msg);
+    hearts(3);
+    if (fresh) pleased();
+    later(C.trapAfter, trap);
+  }
+  function trap() {
+    st = 'trap';
+    cat.classList.add('trap');
+    cat.dataset.eyes = 'wide';
+    chip.textContent = LABEL.trap;
+    log('BELLY TRAP: grabs your cursor and kicks');
+    toast('<b>[Warning]</b> The cat has seized the Reader\'s cursor.');
+    later(1500, () => {
+      cat.classList.remove('trap');
+      if (src.size) goBelly('lets go, wants more rubs');
+      else recover();
+    });
+  }
+  function leave() {
+    last = Date.now();
+    if (st === 'trap') return;
+    clearT();
+    if (st === 'happy') go('sit', 'open', 'sits back up');
+    else if (st === 'belly') recover();
+  }
+  function recover() {
+    const R = C.recovery;
+    st = 'belly';
+    go('belly', 'happy', 'lingers belly-up');
+    startProg(R);
+    later(R * .30, () => go('side', 'happy', 'rolls onto its side'));
+    later(R * .50, () => go('loaf', 'open', 'loafs'));
+    later(R * .68, () => go('stretch', null, 'stretches'));
+    later(R * .82, () => go('groom', null, 'grooms a paw'));
+    later(R, () => { go('sit', 'open', `sits up (recovered in ${(R / 1000).toFixed(0)}s)`); stopProg(); last = Date.now(); });
+  }
+
+  const on = s => { const was = src.size > 0; src.add(s); if (!was) enter(); };
+  const off = s => { if (!src.delete(s)) return; if (!src.size) leave(); };
+  let catType = 'mouse', touchT;
+  cat.addEventListener('pointerdown', e => { catType = e.pointerType; });
+  cat.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' || e.pointerType === 'pen') on('mouse'); });
+  cat.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' || e.pointerType === 'pen') off('mouse'); });
+  cat.addEventListener('focus', () => { if (cat.matches(':focus-visible')) on('key'); });
+  cat.addEventListener('blur', () => off('key'));
+  cat.addEventListener('click', () => {
+    if (catType === 'touch') {
+      if (src.has('touch')) hearts(1); else on('touch');
+      clearTimeout(touchT);
+      touchT = setTimeout(() => off('touch'), 3500);
+      catType = 'mouse';
+    } else {
+      hearts(1);
+    }
+  });
+
+  // eyes follow the cursor, proximity wakes it up, a still cursor nearby gets a slow blink
+  const pupils = $$('.pupils', catSvg);
+  let stillT;
+  addEventListener('pointermove', e => {
+    const r = cat.getBoundingClientRect();
+    const hx = r.left + r.width * .5, hy = r.top + r.height * .44;
+    const dx = e.clientX - hx, dy = e.clientY - hy, dist = Math.hypot(dx, dy) || 1;
+    const k = Math.min(1.7, dist / 40);
+    pupils.forEach(p => p.setAttribute('transform', `translate(${(dx / dist * k).toFixed(2)} ${(dy / dist * k).toFixed(2)})`));
+    if (dist < 150) {
+      last = Date.now();
+      if (st === 'sleep') go('sit', 'open', 'wakes up (you came close)');
+    }
+    clearTimeout(stillT);
+    if (dist < 240 && st === 'sit' && !src.size) {
+      stillT = setTimeout(() => {
+        if (st !== 'sit' || src.size || Date.now() - lastSlow < 8000) return;
+        lastSlow = Date.now();
+        cat.classList.add('slowblink');
+        log('slow blinks at you (cat for "I trust you")');
+        setTimeout(() => cat.classList.remove('slowblink'), 1100);
+      }, 2200);
+    }
+  }, { passive: true });
+
+  setInterval(() => {
+    if (st === 'sit' && !src.size && Date.now() - last > C.sleepAfter) go('sleep', 'closed', 'curls up and falls asleep');
+  }, 1000);
+  setInterval(() => {
+    if (st !== 'sit' || cat.dataset.eyes !== 'open' || cat.classList.contains('slowblink') || Math.random() < .5) return;
+    cat.dataset.eyes = 'closed';
+    setTimeout(() => { if (st === 'sit' && cat.dataset.eyes === 'closed') cat.dataset.eyes = 'open'; }, 140);
+  }, 2600);
+
+  /* ---------- cat lab ---------- */
+  const STAGES = [['linger', .30], ['side', .20], ['loaf', .18], ['stretch', .14], ['groom', .18]];
+  const tl = $('#timeline');
+  function renderTimeline() {
+    $$('span', tl).forEach(s => s.remove());
+    STAGES.forEach(([name, f]) => {
+      const s = document.createElement('span');
+      s.style.flex = f;
+      s.textContent = `${name} ${(C.recovery * f / 1000).toFixed(1)}s`;
+      tl.appendChild(s);
+    });
+  }
+  function bind(id, key, outId) {
+    const input = $(id), o = $(outId);
+    const set = () => { C[key] = +input.value * 1000; o.textContent = `${input.value}s`; if (key === 'recovery') renderTimeline(); };
+    input.addEventListener('input', set);
+    set();
+  }
+  bind('#s-recov', 'recovery', '#o-recov');
+  bind('#s-sleep', 'sleepAfter', '#o-sleep');
+  bind('#s-trap', 'trapAfter', '#o-trap');
+  $('#sleep-now').addEventListener('click', () => {
+    clearT(); stopProg(); cat.classList.remove('trap');
+    go('sleep', 'closed', 'falls asleep (from the lab)');
+  });
+  $('#reset-cat').addEventListener('click', () => {
+    clearT(); stopProg(); cat.classList.remove('trap'); last = Date.now();
+    go('sit', 'open', 'reset');
+  });
+})();
+</script>

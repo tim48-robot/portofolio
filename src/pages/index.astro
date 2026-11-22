@@ -1,0 +1,73 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Contact from '../components/sections/Contact.astro';
+import Dock from '../components/sections/Dock.astro';
+import Header from '../components/sections/Header.astro';
+import Hero from '../components/sections/Hero.astro';
+import Projects from '../components/sections/Projects.astro';
+import StatusDialog from '../components/sections/StatusDialog.astro';
+import { site } from '../content/site';
+import { awakenImages } from '../lib/images';
+import toneSrc from '../assets/panel-tone.png';
+import colourSrc from '../assets/panel-colour.png';
+import frameSrc from '../assets/status-frame-silver.png';
+
+// the panel script and the CSS frame need plain URLs, so the images are optimised here instead of with <Image>
+const awaken = await awakenImages();
+const [tone, colour, frame] = await Promise.all([
+  getImage({ src: toneSrc, format: 'webp', quality: 88, widths: [560, 800, 1040] }),
+  getImage({ src: colourSrc, format: 'webp', quality: 85, widths: [560, 800, 1040] }),
+  getImage({ src: frameSrc, format: 'webp', quality: 90 }),
+]);
+---
+
+<BaseLayout
+  title={site.meta.title}
+  description={site.meta.description}
+  theme="paper"
+  preloadFonts={['geist-500', 'geist-mono-400', 'dela-gothic-one-hit-built']}
+>
+  <Header />
+  <main id="home">
+    <Hero
+      tone={{ src: tone.src, srcset: tone.srcSet.attribute }}
+      colour={{ src: colour.src, srcset: colour.srcSet.attribute }}
+      prefetch={Object.values(awaken)}
+    />
+    <Dock />
+    <Projects />
+  </main>
+  <Contact />
+  <StatusDialog frame={frame.src} />
+  <div class="toast" id="toast" role="status"></div>
+</BaseLayout>
+
+<script>
+  import '../scripts/hero/main';
+</script>
+
+<style>
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    z-index: 50;
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-mono);
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    transition:
+      transform 0.6s var(--spring),
+      opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast:global(.show) {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+</style>
