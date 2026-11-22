@@ -1,0 +1,9 @@
+// Cloudflare Workers: the site is fully static, so the Worker only serves the files Astro builds into dist/.
+// Having this file stops wrangler from trying to install a server adapter the site does not need.
+{
+  "name": "portofolio",
+  "compatibility_date": "2026-11-22",
+  "assets": {
+    "directory": "./dist",
+  },
+}
