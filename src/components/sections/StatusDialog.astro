@@ -1,0 +1,129 @@
+---
+import StatusCard from '../ui/StatusCard.astro';
+import { site } from '../../content/site';
+
+// The hero's "About": a status window that stamps onto the page. Opened by the panel, the nav and the dock
+// (scripts/hero/statusDialog.ts); the rest of the page is inert while it is open.
+interface Props {
+  frame: string;
+}
+const { frame } = Astro.props;
+const rows = site.status.map((r) => ({ label: r.label, kind: 'text' as const, value: r.value }));
+---
+
+<div class="veil" id="veil"></div>
+<section class="status" id="status" role="dialog" aria-modal="true" aria-labelledby="status-h" hidden>
+  <StatusCard skin="silver" rows={rows} frame={frame} titleId="status-h">
+    <button class="x" type="button" id="close" aria-label="Close status card"></button>
+  </StatusCard>
+</section>
+
+<style>
+  .veil {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(14, 14, 16, 0.28);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+  }
+  .veil:global(.open) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .status {
+    position: fixed;
+    z-index: 41;
+    left: 50%;
+    top: 50%;
+    width: min(500px, calc(100vw - 32px));
+    translate: -50% -50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .status:global(.open) {
+    opacity: 1;
+    pointer-events: auto;
+    animation: stamp 0.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  }
+  .status:global(.open) :global(.rule) {
+    animation: draw 0.45s var(--ease) 0.15s both;
+  }
+  @keyframes stamp {
+    0% {
+      transform: scale(1.06);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(0.99);
+      opacity: 1;
+    }
+    100% {
+      transform: none;
+    }
+  }
+  @keyframes draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  /* two ink strokes; red and thicker on hover, no rotation and no grey disc */
+  .x {
+    position: absolute;
+    top: 28px;
+    right: 32px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: var(--ink);
+    border-radius: 50%;
+    transition:
+      color 0.2s,
+      transform 0.25s var(--spring);
+  }
+  .x::before,
+  .x::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: height 0.2s;
+  }
+  .x::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .x::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+  .x:hover {
+    color: var(--red);
+  }
+  .x:hover::before,
+  .x:hover::after {
+    height: 3px;
+  }
+  .x:active {
+    transform: scale(0.86);
+  }
+  .x:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 0;
+  }
+  @media (max-width: 480px) {
+    .x {
+      top: 18px;
+      right: 20px;
+    }
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+import Chip from './Chip.astro';
+import ProjectArt from './ProjectArt.astro';
+import type { Project } from '../../types/content';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const linkAttrs = project.external ? { target: '_blank', rel: 'noopener' } : {};
+---
+
+<a class="project" href={project.href} {...linkAttrs}>
+  <ProjectArt art={project.art} />
+  <div class="meta">
+    <h3>
+      {project.title}
+      <Chip text={project.tag} />
+    </h3>
+    <span class="arrow" aria-hidden="true">
+      ↗
+    </span>
+  </div>
+  <p>{project.description}</p>
+</a>
+
+<style>
+  .project {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-decoration: none;
+    min-width: 0;
+  }
+  .meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .arrow {
+    display: inline-block;
+    transition: transform 0.5s var(--spring);
+  }
+  .project:hover .arrow {
+    transform: rotate(45deg) scale(1.2);
+  }
+  p {
+    margin: 0;
+    color: var(--ink-2);
+    max-width: 56ch;
+  }
+</style>

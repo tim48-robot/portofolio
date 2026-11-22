@@ -1,0 +1,135 @@
+---
+import StatusCard from '../ui/StatusCard.astro';
+import { site } from '../../content/site';
+
+interface Props {
+  frame: string;
+}
+const { frame } = Astro.props;
+const [first, ...rest] = site.name.toUpperCase().split(' ');
+---
+
+<div class="intro">
+  <h1>
+    {first}
+    <br />
+    {rest.join(' ')}
+  </h1>
+  <p class="tagline">{site.awaken.tagline}</p>
+  <StatusCard skin="violet" rows={site.awaken.rows} frame={frame} id="sheet" class="sheet" data-frame={frame} />
+  <div class="btns">
+    <a class="btn primary" href="/#projects">
+      VIEW MY WORK
+    </a>
+    <a class="btn" href="/#contact">
+      CONTACT
+    </a>
+  </div>
+</div>
+
+<style>
+  .intro {
+    position: relative;
+    z-index: 3;
+    max-width: 560px;
+    padding: 0 0 0 6vw;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .intro > :global(*) {
+    pointer-events: auto;
+  }
+  h1 {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(3.8rem, 9vw, 9rem);
+    line-height: 0.86;
+    margin: 0.7rem 0 1rem;
+    color: #f7f5ff;
+    text-shadow:
+      0 0 calc(var(--p) * 36px) var(--aura),
+      0 0 calc(var(--p) * 6px) var(--hot);
+  }
+  .tagline {
+    margin: 0;
+    max-width: 36ch;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+  /* hidden until its frame has loaded (awaken/sheet.ts), so the text never shows without the frame */
+  .intro :global(.sheet) {
+    visibility: hidden;
+    margin-top: 1.6rem;
+    width: min(470px, 100%);
+  }
+  .btns {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.6rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--f-display);
+    letter-spacing: 0.18em;
+    font-size: 1.15rem;
+    padding: 0.8rem 1.7rem;
+    text-decoration: none;
+    color: #f5f3ff;
+    border: 1px solid color-mix(in srgb, var(--aura) 60%, transparent);
+    background: rgba(8, 6, 16, 0.4);
+    transition: 0.25s;
+  }
+  .primary {
+    background: var(--aura);
+    color: #0a0612;
+    border-color: var(--aura);
+  }
+  .btn:hover {
+    box-shadow: 0 0 25px var(--aura);
+    transform: translateY(-2px);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--hot);
+    outline-offset: 3px;
+  }
+  @media (max-width: 880px), (orientation: portrait) and (max-width: 1180px) {
+    .intro {
+      min-height: auto;
+      max-width: none;
+      padding: calc(3.2rem + 1svh + min(80svh, 150vw) * 0.58) 6vw 7.5rem;
+    }
+    /* a dark scrim so the text reads over the lower half of the portrait */
+    .intro::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: calc(3.2rem + min(80svh, 150vw) * 0.4);
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(3, 2, 7, 0) 0%, rgba(3, 2, 7, 0.82) 22%, #030207 42%);
+    }
+    h1 {
+      font-size: clamp(2.9rem, 13vw, 4.8rem);
+    }
+  }
+</style>
+
+<style is:global>
+  /* the pixels that gather into the sheet (awaken/sheet.ts) */
+  .sheet .pix {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    pointer-events: none;
+  }
+  .sheet .pix i {
+    opacity: 0;
+    background: #8a6fd0;
+  }
+</style>

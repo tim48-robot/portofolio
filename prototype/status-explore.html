@@ -1,0 +1,324 @@
+<title>Status Window Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: a study board. Analysis and principles first, then four live directions on real backgrounds, then the recommendation. Single dark board by choice. */
+:root{
+  --board:#111016;
+  --board-2:#1a1822;
+  --line:#2c2936;
+  --text:#ece9f3;
+  --muted:#a29db0;
+  --violet:#8f74d6;
+  --amber:#ffd166;
+  --paper:#f3f2ee;
+  --ink:#0e0e10;
+  --red:#e0262f;
+  --f-ui:"Barlow","Helvetica Neue",Arial,sans-serif;
+  --f-sys:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-grade:"Anton",Impact,sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--board);color:var(--text);font-family:var(--f-ui);font-size:16px;line-height:1.55}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:20px;padding-block:40px 80px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1{font-family:var(--f-sys);font-weight:600;font-size:clamp(34px,5vw,56px);letter-spacing:.02em;line-height:1}
+h2{font-family:var(--f-sys);font-weight:600;font-size:30px;letter-spacing:.02em}
+.kicker{font-family:var(--f-sys);font-size:14px;letter-spacing:.28em;text-transform:uppercase;color:var(--violet)}
+.lede{max-width:68ch;color:var(--muted);margin:10px 0 0}
+section{display:flex;flex-direction:column;gap:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--board-2);border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card img{width:100%;height:auto;display:block;border:1px solid var(--line);background:#000}
+.card h3{font-family:var(--f-sys);font-weight:600;font-size:20px;letter-spacing:.04em}
+ul.notes{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:#cfcad9}
+ul.notes b{color:var(--text);font-weight:600}
+.tag{display:inline-block;font-family:var(--f-sys);font-size:12px;letter-spacing:.16em;text-transform:uppercase;padding:1px 7px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.pr{border-top:2px solid var(--violet);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.pr h3{font-family:var(--f-sys);font-size:19px;font-weight:600;letter-spacing:.03em}
+.pr p{margin:0;color:#cfcad9;font-size:15px}
+.pr small{color:var(--muted);font-size:13px}
+
+/* direction stages */
+.dir{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0;border:1px solid var(--line);background:var(--board-2)}
+@media (max-width:920px){.dir{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;min-height:470px;display:grid;place-items:center;padding:36px 20px;overflow:hidden;background:#07050d}
+.stage.night::before{content:"";position:absolute;inset:0;background:url(bg-b.webp) center/cover;filter:saturate(.9) brightness(.55)}
+.stage.night::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 70% 40%,rgba(120,80,210,.25),transparent 60%),linear-gradient(90deg,rgba(7,5,13,.55),rgba(7,5,13,.1))}
+.stage.paperbg{background-color:var(--paper);background-image:linear-gradient(rgba(14,14,16,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(14,14,16,.045) 1px,transparent 1px);background-size:32px 32px}
+.stage > *{position:relative;z-index:1}
+.replay{position:absolute;right:12px;top:12px;z-index:3;font-family:var(--f-sys);font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.25);padding:6px 12px;cursor:pointer}
+.stage.paperbg .replay{color:var(--ink);background:rgba(255,255,255,.6);border-color:var(--ink)}
+.replay:hover{border-color:var(--amber)}
+.spec{padding:24px 24px 26px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.spec h2 span{color:var(--muted);font-weight:500}
+.spec dl{margin:0;display:grid;gap:10px}
+.spec dt{font-family:var(--f-sys);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--violet)}
+.spec dd{margin:2px 0 0;color:#d8d3e2;font-size:15px}
+.verdict{font-size:15px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.verdict b{color:var(--amber);font-weight:600}
+.rec{border:1px solid var(--amber);background:linear-gradient(0deg,rgba(255,209,102,.06),rgba(255,209,102,.06)),var(--board-2);padding:24px;display:flex;flex-direction:column;gap:12px}
+.rec h2{color:var(--amber)}
+.rec p{margin:0;max-width:72ch;color:#ddd8e6}
+
+/* ---------- A: Violet Sheet ---------- */
+.sA{width:min(380px,100%);color:#fff;font-family:var(--f-sys);text-transform:uppercase;background:linear-gradient(180deg,#a089dc 0%,#7d61c4 38%,#5f45a6 100%);padding:22px 26px 24px;box-shadow:0 20px 50px rgba(10,5,25,.5)}
+.sA .t{font-weight:600;font-size:30px;letter-spacing:.06em;text-align:center;line-height:1}
+.sA .rule{height:2px;margin:14px -8px 18px;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.8);transform-origin:center}
+.sA .rows{display:grid;gap:9px}
+.sA .r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-size:17px;letter-spacing:.04em}
+.sA .r span{font-weight:400;opacity:.92}
+.sA .r b{font-weight:600}
+.sA .meter{display:block;width:150px;height:6px;background:rgba(25,12,55,.45);margin-top:6px}
+.sA .meter i{display:block;height:100%;width:62%;background:var(--amber)}
+.sA .amber{color:var(--amber)}
+.sA .unk{margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.35);display:flex;justify-content:space-between;font-size:17px}
+.sA .unk b{font-weight:600;letter-spacing:.06em}
+.pix{position:absolute;inset:0;display:grid;pointer-events:none;z-index:2}
+.pix i{background:#8a6fd0;opacity:0}
+
+/* ---------- B: Bracket Voice ---------- */
+.sB{width:min(400px,100%);display:flex;flex-direction:column;gap:8px;font-family:var(--f-sys);font-style:italic;font-weight:500;text-transform:uppercase;letter-spacing:.03em}
+.sB .m{background:rgba(64,40,130,.88);color:#f3efff;padding:9px 14px 9px 16px;border-left:3px solid #c9b6ff;font-size:17px;line-height:1.3;opacity:0;transform:translateY(6px)}
+.sB .m em{font-style:italic;color:var(--amber)}
+.sB .m.on{opacity:1;transform:none;transition:opacity .3s,transform .3s}
+
+/* ---------- C: Grade Card ---------- */
+.sC{width:min(360px,100%);background:#1c1430;border:1px solid #6f58b8;color:#efe9ff;padding:20px 22px 22px;font-family:var(--f-sys);text-transform:uppercase;transform-style:preserve-3d}
+.sC .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #6f58b8;padding-bottom:10px}
+.sC .top b{font-size:24px;font-weight:600;letter-spacing:.05em}
+.sC .top span{font-size:14px;letter-spacing:.2em;color:#b9a8ec}
+.sC .gr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 14px;text-align:center}
+.sC .gr div{display:flex;flex-direction:column;gap:2px}
+.sC .gr small{font-size:13px;letter-spacing:.22em;color:#b9a8ec}
+.sC .gr strong{font-family:var(--f-grade);font-weight:400;font-size:56px;line-height:1;color:var(--amber)}
+.sC .meta{display:grid;gap:6px;font-size:16px;letter-spacing:.04em}
+.sC .meta div{display:flex;justify-content:space-between}
+.sC .meta span{color:#b9a8ec}
+
+/* ---------- D: Ink Print ---------- */
+.sD{width:min(380px,100%);color:var(--ink);border:3px solid var(--ink);padding:20px 24px 22px;font-family:var(--f-sys);text-transform:uppercase;position:relative}
+.sD::before{content:"";position:absolute;inset:0;z-index:-1;background:#fbfbf9}
+.sD::after{content:"";position:absolute;inset:-3px;translate:10px 10px;z-index:-2;background:radial-gradient(circle,var(--ink) 1.4px,transparent 1.7px) 0 0/6px 6px}
+.sD .t{font-weight:700;font-size:30px;letter-spacing:.06em;text-align:center;line-height:1}
+.sD .rule{height:3px;background:var(--ink);margin:12px -6px 16px;transform-origin:center}
+.sD .rows{display:grid;gap:8px}
+.sD .r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-size:17px;letter-spacing:.04em}
+.sD .r span{font-weight:400;color:#4a4a50}
+.sD .r b{font-weight:600}
+.sD .unk{margin-top:14px;padding-top:12px;border-top:2px solid var(--ink);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));text-align:center}
+.sD .unk small{display:block;font-size:13px;letter-spacing:.22em;color:#4a4a50}
+.sD .unk strong{font-size:30px;font-weight:700;line-height:1.05}
+.sD .fail{margin:12px 0 0;font-size:15px;letter-spacing:.08em;color:var(--red);text-align:center}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Status window · redesign study</div>
+    <h1>Restraint over effects</h1>
+    <p class="lede">Analisis window yang sekarang, prinsip yang saya ambil dari 55 referensi kamu (8 manhwa), lalu 4 arah desain yang dirender langsung. Tekan "Replay" untuk melihat cara tiap window muncul.</p>
+  </header>
+
+  <section>
+    <h2>1. Window yang sekarang</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Awaken (gelap, hologram)</h3>
+        <img src="cur-awaken-status.png" alt="Current Awaken status window" width="430" height="250">
+        <ul class="notes">
+          <li><b>Yang berhasil:</b> datanya ringkas, bar MANA terhubung ke aura.</li>
+          <li><b>Yang generik:</b> kaca gelap + glow + sudut terpotong + bingkai ganda + lencana "!". Itu lima dekorasi sekaligus, persis "fantasy dashboard" yang brief minta dihindari.</li>
+          <li><b>Tipografi:</b> JetBrains Mono membuatnya terasa seperti terminal developer, bukan "system" di dunia manhwa.</li>
+          <li><b>Hierarki rata:</b> label kecil pudar, semua nilai sama berat. Ungu hanya dipakai sebagai glow, tidak membawa makna.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Hero (kertas, tinta)</h3>
+        <img src="cur-hero-status.png" alt="Current hero status card" width="486" height="512">
+        <ul class="notes">
+          <li><b>Yang berhasil:</b> bayangan screentone dan "???" cocok dengan dunia kertas.</li>
+          <li><b>Yang generik:</b> sudut terpotong + garis ganda + lencana merah + tombol X bersudut bersaing dengan isi.</li>
+          <li><b>Tipografi:</b> tiga keluarga font (mono, sans, display) dalam satu kartu kecil, jadi tidak punya identitas.</li>
+          <li><b>Hubungan:</b> versi kertas dan versi Awaken tidak terasa satu sistem.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Yang membuat referensi efektif</h2>
+    <div class="principles">
+      <div class="pr"><h3>Window = bidang warna</h3><p>Tomb Raider King tidak menggambar kotak. Window nya selembar cahaya ungu muda, dan itu sudah cukup jadi identitas.</p><small>Tomb Raider King</small></div>
+      <div class="pr"><h3>Satu garis, bukan bingkai</h3><p>Judul di tengah, lalu satu garis putih bercahaya. Hanya itu dekorasinya.</p><small>Tomb Raider King · Solo Leveling</small></div>
+      <div class="pr"><h3>Satu font condensed kapital</h3><p>Semua referensi memakai sans condensed huruf besar. Hierarki datang dari ukuran dan ketebalan, bukan dari font yang berbeda.</p><small>Semua judul</small></div>
+      <div class="pr"><h3>Warna = makna</h3><p>Kuning untuk progres, merah untuk bahaya, hijau untuk skill baru. Warna dipakai untuk menandai, bukan menghias.</p><small>Tomb Raider King · Solo Leveling</small></div>
+      <div class="pr"><h3>Suara system</h3><p>Pesan dalam kurung [ ], lowercase "[system]" yang santai, "???" untuk hal yang belum diketahui.</p><small>Omniscient Reader · Questism</small></div>
+      <div class="pr"><h3>Muncul sebagai data</h3><p>Window berpendar dari piksel di pinggiran, dengan bunyi "DING". Transisinya menjelaskan bahwa ini sistem, bukan sekadar animasi.</p><small>Omniscient Reader · Tomb Raider King</small></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Empat arah</h2>
+
+    <article class="dir">
+      <div class="stage night"><button class="replay" data-play="A" type="button">Replay</button>
+        <div class="sA" id="A">
+          <div class="t">Status</div>
+          <div class="rule"></div>
+          <div class="rows">
+            <div class="r"><span>Name</span><b>Justin Timothy</b></div>
+            <div class="r"><span>Class</span><b>Developer</b></div>
+            <div class="r"><span>Aura</span><b class="amber">62%</b></div>
+            <div class="r"><span>Mana</span><span class="meter"><i></i></span></div>
+            <div class="r"><span>Skills</span><b>[Your stack]</b></div>
+          </div>
+          <div class="unk"><span>STR · INT · AGI</span><b>???</b></div>
+        </div>
+      </div>
+      <div class="spec">
+        <h2>A · Violet Sheet <span>· direkomendasikan</span></h2>
+        <dl>
+          <div><dt>Tipografi</dt><dd>Satu keluarga: Barlow Condensed, huruf besar. Judul 600 dengan tracking lebar, label 400, nilai 600. Tidak ada mono.</dd></div>
+          <div><dt>Warna</dt><dd>Window nya adalah lembaran ungu (lebih terang di atas, lebih dalam di bawah). Teks putih. <b style="color:var(--amber)">Kuning</b> hanya untuk nilai yang bergerak (aura, mana). Satu-satunya cahaya ada di garis judul.</dd></div>
+          <div><dt>Layout dan hierarki</dt><dd>Judul di tengah → satu garis → baris label/nilai rata kiri-kanan → baris "???" yang dipisah tipis di bawah. Tanpa bingkai, sudut terpotong atau ikon.</dd></div>
+          <div><dt>Interaksi</dt><dd>Muncul dari piksel ungu yang menyusun diri lalu larut, garis judul tergambar dari tengah, dan "ding" pelan kalau suara menyala. Setelah itu window diam, tidak miring dan tidak berdenyut.</dd></div>
+        </dl>
+        <p class="verdict"><b>Kuat:</b> paling dekat dengan prinsip referensi, paling terbaca, dan bisa punya kembaran versi kertas (D).</p>
+      </div>
+    </article>
+
+    <article class="dir">
+      <div class="stage night"><button class="replay" data-play="B" type="button">Replay</button>
+        <div class="sB" id="B">
+          <div class="m">[ Name: Justin Timothy ]</div>
+          <div class="m">[ Class: Developer ]</div>
+          <div class="m">[ Aura is rising: <em>62%</em> ]</div>
+          <div class="m">[ Skills: Your stack ]</div>
+          <div class="m">[ The system cannot measure this person ]</div>
+        </div>
+      </div>
+      <div class="spec">
+        <h2>B · Bracket Voice</h2>
+        <dl>
+          <div><dt>Tipografi</dt><dd>Barlow Condensed italic, huruf besar, dalam kurung [ ] seperti pesan system di Omniscient Reader.</dd></div>
+          <div><dt>Warna</dt><dd>Bilah ungu tua solid dengan garis kiri lilac. Kuning hanya untuk angka.</dd></div>
+          <div><dt>Layout dan hierarki</dt><dd>Tidak ada window. Informasi datang sebagai tumpukan pesan, satu per baris.</dd></div>
+          <div><dt>Interaksi</dt><dd>Pesan muncul satu per satu seperti notifikasi.</dd></div>
+        </dl>
+        <p class="verdict"><b>Catatan:</b> paling naratif, tapi paling susah dipindai, dan terasa seperti kalimat manhwa (yang kamu minta dikurangi).</p>
+      </div>
+    </article>
+
+    <article class="dir">
+      <div class="stage night"><button class="replay" data-play="C" type="button">Replay</button>
+        <div class="sC" id="C">
+          <div class="top"><b>Justin Timothy</b><span>Developer</span></div>
+          <div class="gr">
+            <div><small>STR</small><strong>?</strong></div>
+            <div><small>INT</small><strong>?</strong></div>
+            <div><small>AGI</small><strong>?</strong></div>
+          </div>
+          <div class="meta">
+            <div><span>Aura</span><b>62%</b></div>
+            <div><span>Skills</span><b>[Your stack]</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="spec">
+        <h2>C · Grade Card</h2>
+        <dl>
+          <div><dt>Tipografi</dt><dd>Huruf nilai raksasa (Anton) seperti kartu Questism, dengan label Barlow Condensed.</dd></div>
+          <div><dt>Warna</dt><dd>Kartu ungu tua dengan garis tipis, nilai dalam kuning.</dd></div>
+          <div><dt>Layout dan hierarki</dt><dd>Tiga "nilai" besar jadi fokus. Nama dan role kecil di atas.</dd></div>
+          <div><dt>Interaksi</dt><dd>Kartu berputar masuk seperti kartu yang baru didapat.</dd></div>
+        </dl>
+        <p class="verdict"><b>Catatan:</b> berani dan mudah diingat, tapi menilai diri sendiri dengan huruf itu riskan buat recruiter. Data penting (skills) jadi kecil.</p>
+      </div>
+    </article>
+
+    <article class="dir">
+      <div class="stage paperbg"><button class="replay" data-play="D" type="button">Replay</button>
+        <div class="sD" id="D">
+          <div class="t">Status</div>
+          <div class="rule"></div>
+          <div class="rows">
+            <div class="r"><span>Name</span><b>Justin Timothy</b></div>
+            <div class="r"><span>Role</span><b>Developer</b></div>
+            <div class="r"><span>Stack</span><b>[Your stack]</b></div>
+            <div class="r"><span>Status</span><b>Open to opportunities</b></div>
+            <div class="r"><span>Off-duty</span><b>Manhwa, Tekken 8</b></div>
+          </div>
+          <div class="unk"><div><small>STR</small><strong>???</strong></div><div><small>INT</small><strong>???</strong></div><div><small>AGI</small><strong>???</strong></div></div>
+          <p class="fail">Measurement failed.</p>
+        </div>
+      </div>
+      <div class="spec">
+        <h2>D · Ink Print</h2>
+        <dl>
+          <div><dt>Tipografi</dt><dd>Sama persis dengan A: Barlow Condensed, aturan ukuran dan ketebalan yang sama.</dd></div>
+          <div><dt>Warna</dt><dd>Kertas dan tinta hitam, bayangan screentone. <b style="color:var(--red)">Merah</b> hanya untuk "Measurement failed".</dd></div>
+          <div><dt>Layout dan hierarki</dt><dd>Kerangka A, tapi dicetak: garis judul jadi garis tinta tebal, bingkai jadi garis panel manhwa.</dd></div>
+          <div><dt>Interaksi</dt><dd>Muncul seperti stempel: sedikit membesar lalu menempel, garis tinta tergambar dari tengah.</dd></div>
+        </dl>
+        <p class="verdict"><b>Kuat:</b> ini kembaran A untuk hero kertas. Satu sistem, dua media.</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="rec">
+    <h2>Rekomendasi: A di Awaken, D di hero</h2>
+    <p>A dan D adalah satu sistem: tipografi, urutan, dan aturan warna yang sama, hanya beda media (cahaya ungu vs tinta di kertas). Ini mengambil prinsip dari referensi, yaitu window sebagai bidang warna, satu garis, satu font condensed, dan warna sebagai makna, tanpa menempelkan ornamen dari judul manapun.</p>
+    <p>B lebih cocok sebagai gaya notifikasi kecil nanti (misalnya saat form kontak terkirim). C saya simpan sebagai ide, tapi tidak untuk data utama.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // A: pixels gather into the sheet, then dissolve away to reveal it
+  function pixelIn(el, color) {
+    const cols = 12, rows = 9;
+    const grid = document.createElement('div');
+    grid.className = 'pix';
+    grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+    grid.style.gridTemplateRows = `repeat(${rows},1fr)`;
+    const cells = [];
+    for (let i = 0; i < cols * rows; i++) { const c = document.createElement('i'); c.style.background = color; grid.appendChild(c); cells.push(c); }
+    el.style.position = 'relative';
+    el.appendChild(grid);
+    el.style.visibility = 'visible';
+    [...el.children].forEach(ch => { if (ch !== grid) ch.style.opacity = 0; });
+    el.style.background = 'transparent'; el.style.boxShadow = 'none';
+    cells.forEach(c => c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 90, delay: Math.random() * 260, fill: 'forwards' }));
+    setTimeout(() => {
+      el.style.background = ''; el.style.boxShadow = '';
+      [...el.children].forEach(ch => { if (ch !== grid) ch.style.opacity = ''; });
+      const rule = el.querySelector('.rule');
+      if (rule) rule.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      cells.forEach(c => c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, delay: Math.random() * 300, fill: 'forwards' }));
+      setTimeout(() => grid.remove(), 480);
+    }, 380);
+  }
+  const play = {
+    A: () => pixelIn(document.getElementById('A'), '#8a6fd0'),
+    B: () => { const ms = [...document.querySelectorAll('#B .m')]; ms.forEach(m => m.classList.remove('on')); ms.forEach((m, i) => setTimeout(() => m.classList.add('on'), 120 + i * 260)); },
+    C: () => document.getElementById('C').animate([{ transform: 'perspective(800px) rotateY(-90deg)', opacity: 0 }, { transform: 'perspective(800px) rotateY(8deg)', opacity: 1, offset: .7 }, { transform: 'none', opacity: 1 }], { duration: 650, easing: 'cubic-bezier(.2,.8,.2,1)' }),
+    D: () => { const d = document.getElementById('D'); d.animate([{ transform: 'scale(1.06)', opacity: 0 }, { transform: 'scale(.99)', opacity: 1, offset: .6 }, { transform: 'none' }], { duration: 380, easing: 'cubic-bezier(.3,1.4,.5,1)' }); d.querySelector('.rule').animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 420, delay: 160, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' }); }
+  };
+  document.querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => { if (!reduce) play[b.dataset.play](); }));
+  // B starts revealed (complete at rest), others play once when scrolled into view
+  document.querySelectorAll('#B .m').forEach(m => m.classList.add('on'));
+  const seen = new Set();
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    const id = e.target.id;
+    if (e.isIntersecting && !seen.has(id) && !reduce) { seen.add(id); play[id](); }
+  }), { threshold: .6 });
+  ['A', 'B', 'C', 'D'].forEach(id => io.observe(document.getElementById(id)));
+})();
+</script>

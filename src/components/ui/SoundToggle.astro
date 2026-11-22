@@ -1,0 +1,69 @@
+---
+// The label and state are set by sfx.ts (bindSoundToggle); both pages share one stored on/off choice.
+interface Props {
+  variant: 'paper' | 'night';
+}
+const { variant } = Astro.props;
+---
+
+<button class:list={['snd', variant]} type="button" aria-pressed="false" data-sound-toggle>
+  Sound off
+</button>
+
+<style>
+  .snd {
+    font: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .paper {
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: none;
+    color: var(--ink);
+    padding: 7px 12px;
+    border-radius: 999px;
+    transition:
+      background 0.2s,
+      border-color 0.2s;
+  }
+  .paper::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+  .paper[aria-pressed='true'] {
+    border-color: var(--ink);
+  }
+  .paper[aria-pressed='true']::before {
+    background: var(--red);
+  }
+  .paper:hover {
+    background: var(--paper-2);
+  }
+  @media (max-width: 600px) {
+    .paper {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+  }
+  .night {
+    font: 600 0.72rem var(--f-ui);
+    letter-spacing: 0.04em;
+    color: #cfcbe0;
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(10, 8, 18, 0.6);
+    backdrop-filter: blur(8px);
+  }
+  .night[aria-pressed='true'] {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+</style>

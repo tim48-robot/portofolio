@@ -1,0 +1,63 @@
+---
+import SoundToggle from '../ui/SoundToggle.astro';
+// Back to the hero on the left; the ink look and sound on the right.
+---
+
+<a class="back" href="/" id="back">
+  ← BACK
+</a>
+<div class="pills">
+  <button class="ink" id="ink" type="button" aria-pressed="true">
+    Ink on
+  </button>
+  <SoundToggle variant="night" />
+</div>
+
+<style>
+  .back {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 10;
+    font: 600 0.72rem var(--f-code);
+    letter-spacing: 0.12em;
+    color: #cfcbe0;
+    text-decoration: none;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(10, 8, 18, 0.6);
+    backdrop-filter: blur(8px);
+  }
+  .back:hover {
+    color: #fff;
+    border-color: var(--aura);
+  }
+  .pills {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    display: flex;
+    gap: 0.4rem;
+  }
+  .ink {
+    cursor: pointer;
+    font: 600 0.72rem var(--f-ui);
+    letter-spacing: 0.04em;
+    color: #cfcbe0;
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(10, 8, 18, 0.6);
+    backdrop-filter: blur(8px);
+  }
+  .ink[aria-pressed='true'] {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+  .back:focus-visible,
+  .pills :global(button:focus-visible) {
+    outline: 2px solid var(--hot);
+    outline-offset: 2px;
+  }
+</style>

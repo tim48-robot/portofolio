@@ -1,0 +1,59 @@
+<title>Status Card Fonts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Exo+2:wght@600;700&family=Khand:wght@500;600&family=Rajdhani:wght@600;700&family=Saira+Condensed:wght@500;700&family=Saira+Semi+Condensed:wght@500;700;800&family=Teko:wght@400;600&family=Barlow:wght@400;500&display=swap">
+<style>
+/* Layout: a grid of identical purple cards, one per typeface candidate, so only the type changes. Single dark board by choice. */
+:root{--bg:#120f1a;--fg:#ece8f5;--muted:#a59fb6;--line:#2d2839;--card-a:#5b3fa0;--card-b:#2c1d55;--gold:#ffd84d;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Barlow,system-ui,sans-serif}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:20px;padding-block:36px 64px;display:flex;flex-direction:column;gap:24px}
+h1{margin:0;font-family:"Saira Semi Condensed",sans-serif;font-weight:700;font-size:clamp(30px,4vw,44px);letter-spacing:.02em}
+p{margin:0;color:var(--muted);max-width:70ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:18px}
+.opt{display:flex;flex-direction:column;gap:10px;min-width:0}
+.opt h2{margin:0;font-size:15px;font-weight:500;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.opt h2 b{color:var(--fg);font-weight:500}
+.card{position:relative;aspect-ratio:3/4;max-width:100%;padding:28px 26px;color:#fff;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;
+  background:radial-gradient(ellipse at 50% 35%,rgba(255,255,255,.18),transparent 60%),linear-gradient(180deg,var(--card-a),var(--card-b));border:2px solid #b9a5ee;outline:1px solid rgba(185,165,238,.4);outline-offset:-10px}
+.lab{font-size:15px;letter-spacing:.3em;opacity:.9}
+.dia{width:34px;height:34px;border:2px solid #fff;rotate:45deg;display:grid;place-items:center;margin:4px 0 6px}
+.dia span{rotate:-45deg;font-weight:700;font-size:18px}
+.name{font-size:40px;line-height:1;text-transform:uppercase}
+.cls{font-size:19px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.box{margin-top:auto;width:100%;border:1.5px solid rgba(255,255,255,.75);padding:12px 12px;display:grid;gap:6px;font-size:17px;text-transform:uppercase;letter-spacing:.04em}
+.box div{display:flex;justify-content:space-between;gap:10px}
+.box span{opacity:.8}
+/* candidates */
+.f1{font-family:"Saira Semi Condensed",sans-serif}.f1 .name{font-weight:800}.f1 .box,.f1 .cls,.f1 .lab{font-weight:500}
+.f2{font-family:"Teko",sans-serif}.f2 .name{font-weight:600;font-size:52px}.f2 .box{font-size:21px;font-weight:400}.f2 .cls{font-size:24px;font-weight:400}.f2 .lab{font-size:19px;font-weight:400}
+.f3{font-family:"Rajdhani",sans-serif}.f3 .name{font-weight:700}.f3 .box,.f3 .cls,.f3 .lab{font-weight:600}
+.f4{font-family:"Khand",sans-serif}.f4 .name{font-weight:600;font-size:46px}.f4 .box{font-size:19px;font-weight:500}.f4 .cls,.f4 .lab{font-weight:500}
+.f5{font-family:"Exo 2",sans-serif}.f5 .name{font-weight:700;font-size:34px}.f5 .box{font-size:15px;font-weight:600}.f5 .cls,.f5 .lab{font-weight:600}
+.f6{font-family:"Saira Semi Condensed",sans-serif}.f6 .lab{font-family:"Cinzel",serif;font-weight:700;letter-spacing:.24em}.f6 .name{font-weight:800}.f6 .box,.f6 .cls{font-weight:500}
+</style>
+
+<div class="wrap">
+  <h1>Font untuk status card</h1>
+  <p>Kartu, warna dan isi sama persis, hanya fontnya yang berbeda. Semua gratis dari Google Fonts. Nomor 1–5 adalah kandidat yang paling mirip huruf Leveling With the Gods; nomor 6 memadukan sans itu dengan serif klasik untuk label, supaya cocok dengan bingkai ornamen ala Questism.</p>
+  <div class="grid">
+    <div class="opt"><h2><b>1 · Saira Semi Condensed</b>paling mirip</h2>
+      <div class="card f1"><div class="lab">STATUS</div><div class="dia"><span>!</span></div><div class="name">Justin Timothy</div><div class="cls">Developer</div>
+        <div class="box"><div><span>Stack</span><b>[Your stack]</b></div><div><span>Status</span><b>Open to work</b></div><div><span>Off-duty</span><b>Manhwa, Tekken 8</b></div></div></div></div>
+    <div class="opt"><h2><b>2 · Teko</b>lebih ramping, tinggi</h2>
+      <div class="card f2"><div class="lab">STATUS</div><div class="dia"><span>!</span></div><div class="name">Justin Timothy</div><div class="cls">Developer</div>
+        <div class="box"><div><span>Stack</span><b>[Your stack]</b></div><div><span>Status</span><b>Open to work</b></div><div><span>Off-duty</span><b>Manhwa, Tekken 8</b></div></div></div></div>
+    <div class="opt"><h2><b>3 · Rajdhani</b>lebih teknis</h2>
+      <div class="card f3"><div class="lab">STATUS</div><div class="dia"><span>!</span></div><div class="name">Justin Timothy</div><div class="cls">Developer</div>
+        <div class="box"><div><span>Stack</span><b>[Your stack]</b></div><div><span>Status</span><b>Open to work</b></div><div><span>Off-duty</span><b>Manhwa, Tekken 8</b></div></div></div></div>
+    <div class="opt"><h2><b>4 · Khand</b>tegas, padat</h2>
+      <div class="card f4"><div class="lab">STATUS</div><div class="dia"><span>!</span></div><div class="name">Justin Timothy</div><div class="cls">Developer</div>
+        <div class="box"><div><span>Stack</span><b>[Your stack]</b></div><div><span>Status</span><b>Open to work</b></div><div><span>Off-duty</span><b>Manhwa, Tekken 8</b></div></div></div></div>
+    <div class="opt"><h2><b>5 · Exo 2</b>lebih lebar, "game"</h2>
+      <div class="card f5"><div class="lab">STATUS</div><div class="dia"><span>!</span></div><div class="name">Justin Timothy</div><div class="cls">Developer</div>
+        <div class="box"><div><span>Stack</span><b>[Your stack]</b></div><div><span>Status</span><b>Open to work</b></div><div><span>Off-duty</span><b>Manhwa, Tekken 8</b></div></div></div></div>
+    <div class="opt"><h2><b>6 · Saira + Cinzel</b>sans + label klasik</h2>
+      <div class="card f6"><div class="lab">STATUS</div><div class="dia"><span>!</span></div><div class="name">Justin Timothy</div><div class="cls">Developer</div>
+        <div class="box"><div><span>Stack</span><b>[Your stack]</b></div><div><span>Status</span><b>Open to work</b></div><div><span>Off-duty</span><b>Manhwa, Tekken 8</b></div></div></div></div>
+  </div>
+</div>

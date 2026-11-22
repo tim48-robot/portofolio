@@ -1,0 +1,217 @@
+---
+// The manhwa panel: the portrait printed in screentone (rendered offline by tools/make-panel.py), a lens of full
+// colour under the pointer (scripts/hero/panelArt.ts), and the hold-to-shatter that leads to Awaken (shatter.ts).
+interface Props {
+  tone: { src: string; srcset: string };
+  colour: { src: string; srcset: string };
+  /** Awaken's files, fetched while the panel is held */
+  prefetch: string[];
+}
+const { tone, colour, prefetch } = Astro.props;
+// the panel's rendered width (see .panel below), so phones download a smaller file
+const sizes =
+  '(max-width: 640px) min(82vw, 380px), (max-width: 1100px) and (orientation: portrait) min(56vw, 480px), clamp(250px, min(29vw, 46vh), 520px)';
+---
+
+<div class="stage">
+  <button
+    class="panel"
+    id="panel"
+    type="button"
+    aria-label="Justin's portrait. Press for the status card, hold Space or Enter to awaken"
+    data-prefetch={prefetch.join(',')}
+  >
+    <img
+      class="art"
+      id="art"
+      src={tone.src}
+      srcset={tone.srcset}
+      sizes={sizes}
+      width="1040"
+      height="1387"
+      alt=""
+      fetchpriority="high"
+    />
+    <img
+      class="art lens"
+      id="lens"
+      src={colour.src}
+      srcset={colour.srcset}
+      sizes={sizes}
+      width="1040"
+      height="1387"
+      alt=""
+      decoding="async"
+    />
+    <span class="hint">click: status · hold: awaken</span>
+    <svg class="cracks" id="cracks" aria-hidden="true"></svg>
+  </button>
+  <div class="under">
+    <span class="label">
+      <span class="fine-only">click for status · hold to awaken</span>
+      <span class="coarse-only">tap for status · hold to awaken</span>
+    </span>
+    <a class="sr" href="/awaken">
+      Go to the Awaken page
+    </a>
+  </div>
+</div>
+<div class="dark" id="dark"></div>
+
+<style>
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    perspective: 1100px;
+  }
+  .panel {
+    position: relative;
+    width: clamp(250px, min(29vw, 46vh), 520px);
+    aspect-ratio: 3/4;
+    border: 3px solid var(--ink);
+    background: var(--paper);
+    box-shadow: 10px 10px 0 var(--ink);
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition:
+      transform 0.7s var(--ease),
+      box-shadow 0.7s var(--ease);
+    padding: 0;
+    display: block;
+    overflow: hidden;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  .panel:global(.tilting) {
+    transition:
+      transform 0.12s linear,
+      box-shadow 0.2s;
+  }
+  .panel:active {
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  /* the full-colour panel, shown only inside a soft circle that panelArt.ts moves */
+  .lens {
+    position: absolute;
+    inset: 0;
+    --lx: 50%;
+    --ly: 30%;
+    --lr: 0px;
+    mask: radial-gradient(circle var(--lr) at var(--lx) var(--ly), #000 55%, transparent 100%);
+  }
+  .hint {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4px 8px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.25s,
+      transform 0.4s var(--spring);
+  }
+  .panel:hover .hint,
+  .panel:focus-visible .hint {
+    opacity: 1;
+    transform: none;
+  }
+  .cracks {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .under {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 14px;
+  }
+  .coarse-only {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .fine-only {
+      display: none;
+    }
+    .coarse-only {
+      display: inline;
+    }
+  }
+  /* portrait tablets: the vw/vh rule above would leave the panel at its 250px minimum */
+  @media (min-width: 641px) and (max-width: 1100px) and (orientation: portrait) {
+    .panel {
+      width: min(56vw, 480px);
+    }
+  }
+  @media (max-width: 640px) {
+    .panel {
+      width: min(82vw, 380px);
+    }
+  }
+  .dark {
+    position: fixed;
+    inset: 0;
+    z-index: 59;
+    background: #07040d;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.55s ease 0.25s;
+  }
+  .dark:global(.on) {
+    opacity: 1;
+  }
+</style>
+
+<style is:global>
+  /* drawn by shatter.ts at runtime, so these cannot be scoped */
+  .cracks path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .cracks .k {
+    stroke: var(--ink);
+    stroke-width: 4;
+  }
+  .cracks .w {
+    stroke: #fff;
+    stroke-width: 1.4;
+  }
+  .shards {
+    position: fixed;
+    z-index: 60;
+    pointer-events: none;
+    perspective: 700px;
+  }
+  .shard {
+    position: absolute;
+    inset: 0;
+    background-size: 100% 100%;
+    will-change: transform, opacity;
+  }
+  .impactfx {
+    position: fixed;
+    inset: 0;
+    z-index: 61;
+    pointer-events: none;
+    backdrop-filter: invert(1) contrast(1.4);
+  }
+</style>

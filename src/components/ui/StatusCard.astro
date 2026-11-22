@@ -1,0 +1,148 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { AwakenRow } from '../../types/content';
+
+// One status window, two skins: silver ink-print on the hero page, the violet sheet on Awaken.
+// Same condensed face, same ruled title, same row order; only colour, frame and size change.
+interface Props extends HTMLAttributes<'div'> {
+  skin: 'silver' | 'violet';
+  rows: AwakenRow[];
+  frame: string;
+  titleId?: string;
+}
+const { skin, rows, frame, titleId, class: className, ...attrs } = Astro.props;
+---
+
+<div {...attrs} class:list={['card', skin, className]} style={`--frame:url(${frame})`}>
+  <slot />
+  <h2 class="t" id={titleId}>
+    Status
+  </h2>
+  <div class="rule"></div>
+  <dl>
+    {rows.map((row) => (
+      <div class="row">
+        <dt>{row.label}</dt>
+        {row.kind === 'text' && <dd>{row.value}</dd>}
+        {row.kind === 'aura' && (
+          <dd class="amber" data-aura-pct>
+            0%
+          </dd>
+        )}
+        {row.kind === 'meter' && (
+          <dd>
+            <span class="meter" />
+          </dd>
+        )}
+      </div>
+    ))}
+  </dl>
+</div>
+
+<style>
+  .card {
+    position: relative;
+    font-family: var(--f-status);
+    text-transform: uppercase;
+    background: var(--frame) center/100% 100% no-repeat;
+  }
+  .t {
+    margin: 0;
+    text-align: center;
+    line-height: 1;
+    letter-spacing: 0.06em;
+  }
+  .rule {
+    transform-origin: center;
+  }
+  dl {
+    margin: 0;
+    display: grid;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    letter-spacing: 0.04em;
+  }
+  dt {
+    font-weight: 400;
+  }
+  dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* hero: black ink on the silver frame */
+  .silver {
+    color: var(--ink);
+    padding: 46px 60px 42px;
+    filter: drop-shadow(0 16px 28px rgba(14, 14, 16, 0.22));
+  }
+  .silver .t {
+    font-weight: 700;
+    font-size: 32px;
+  }
+  .silver .rule {
+    height: 3px;
+    background: var(--ink);
+    margin: 12px -6px 16px;
+  }
+  .silver dl {
+    gap: 9px;
+  }
+  .silver .row {
+    font-size: 18px;
+  }
+  .silver dt {
+    color: #4a4a50;
+  }
+  @media (max-width: 480px) {
+    .silver {
+      padding: 36px 40px 32px;
+    }
+  }
+
+  /* Awaken: white type in the violet frame, amber only for values that move */
+  .violet {
+    color: #fff;
+    padding: 2.2rem 2.7rem 2.3rem;
+    filter: drop-shadow(0 16px 30px rgba(8, 4, 20, 0.6));
+  }
+  .violet .t {
+    font-weight: 600;
+    font-size: 1.85rem;
+  }
+  .violet .rule {
+    height: 2px;
+    margin: 0.85rem -0.5rem 1.1rem;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+  .violet dl {
+    gap: 0.55rem;
+  }
+  .violet .row {
+    font-size: 1.05rem;
+  }
+  .amber {
+    color: var(--amber);
+    font-variant-numeric: tabular-nums;
+  }
+  .meter {
+    display: block;
+    width: clamp(100px, 30vw, 150px);
+    height: 6px;
+    background: rgba(25, 12, 55, 0.45);
+    align-self: center;
+  }
+  .meter::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: calc(max(var(--p) * 70%, var(--charge) * 100%));
+    background: var(--amber);
+  }
+</style>
